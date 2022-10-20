@@ -3,13 +3,8 @@ kind: Component
 metadata:
   name: 'openedx-atlas'
   description: "An Open edX CLI tool for moving translation files from openedx-translations."
-  links:
-  - url: "https://github.com/openedx/openedx-atlas"
-    title: "Source Code"
-    icon: "Code"
   annotations:
     openedx.org/arch-interest-groups: "Carlos-Muniz"
-    github.com/project-slug: openedx/openedx-atlas
 spec:
   owner: tcril-engineering
   type: 'library'
