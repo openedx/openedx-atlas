@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: 'openedx-atlas'
+  description: "An Open edX CLI tool for moving translation files from openedx-translations."
+  annotations:
+    openedx.org/arch-interest-groups: "Carlos-Muniz"
+spec:
+  owner: tcril-engineering
+  type: 'library'
+  lifecycle: 'experimental'
