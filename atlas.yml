@@ -1,0 +1,6 @@
+pull:
+  language:
+    - en
+    - xx
+  branch: main
+  repository: openedx/openedx-translations
