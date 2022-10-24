@@ -12,6 +12,7 @@ Configuration:
 """
 import os
 import click
+from sparse_checkout import sparse_checkout
 from yaml import load
 
 try:
@@ -38,6 +39,13 @@ def atlas(ctx, config):
 
 
 @atlas.command()
+@click.option("--branch", "-b", help="A branch of translation files")
+@click.option(
+    "--directory",
+    "-d",
+    required=False,
+    help="Directory (name of the repository) containing translations to be downloaded",
+)
 @click.option(
     "--language",
     "-l",
@@ -45,16 +53,18 @@ def atlas(ctx, config):
     multiple=True,
     help="A language of translation file",
 )
-@click.option("--branch", "-b", help="A branch of translation files")
 @click.option("--repository", "-r", help="The repository containing translation files")
-def pull(language, branch, repository):
+def pull(branch, directory, language, repository):
     """
     Downloads translation files for languages from a repository branch.
     """
     click.echo(
-        f"Pulling translation files from {repository}:{branch} for language(s): "
-        f"{', '.join(language)}."
+        "Pulling translation files"
+        f"\n - directory: {', '.join(directory)}"
+        f"\n - language(s): {', '.join(language)}."
+        f"\n - repository: {repository}:{branch}"
     )
+    sparse_checkout(directory, repository, branch)
 
 
 if __name__ == "__main__":
