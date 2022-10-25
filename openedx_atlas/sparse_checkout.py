@@ -1,11 +1,11 @@
 """
-Handles the sparse-checkout of subdirectories of the repository:branch containing
+Handles the sparse-checkout of subdirectories of the <repository>:<branch> containing
 translation files
 """
-from subprocess import call
 import os
 import tempfile
 from shutil import copytree
+from subprocess import call
 
 
 def sparse_checkout(directory, repository, branch, output_path=os.getcwd()):

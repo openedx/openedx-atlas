@@ -1,6 +1,7 @@
 pull:
+  branch: main
+  directory: credentials
   language:
     - en
     - xx
-  branch: main
   repository: openedx/openedx-translations

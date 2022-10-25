@@ -11,14 +11,11 @@ Configuration:
 
 """
 import os
-import click
-from sparse_checkout import sparse_checkout
-from yaml import load
 
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
+import click
+from yaml import Loader, load
+
+from openedx_atlas.sparse_checkout import sparse_checkout
 
 
 @click.group(
