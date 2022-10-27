@@ -1,11 +1,9 @@
 """
-This tool has one function:
-pull stuff from openedx-translations based on a yaml configuration file
-Should look like:
-    atlas pull
+Pull translation files from a repository:branch:directory.
+
+Run atlas pull
 It should also allow for all configuration parameters to be done from the CLI
 Configuration:
-    - language
     - branch
     - repository
 
@@ -27,7 +25,7 @@ from openedx_atlas.sparse_checkout import sparse_checkout
 @click.pass_context
 def atlas(ctx, config):
     """
-    Atlas configuration
+    Atlas configuration.
     """
     if os.path.exists(config):
         with open(config, "r", encoding="utf-8") as opened_config:
@@ -36,7 +34,7 @@ def atlas(ctx, config):
 
 
 @atlas.command()
-@click.option("--branch", "-b", help="A branch of translation files")
+@click.option("--branch", "-b", default="main", help="A branch of translation files")
 @click.option(
     "--directory",
     "-d",
@@ -44,25 +42,19 @@ def atlas(ctx, config):
     help="Directory (name of the repository) containing translations to be downloaded",
 )
 @click.option(
-    "--language",
-    "-l",
-    required=False,
-    multiple=True,
-    help="A language of translation file",
+    "--repository",
+    "-r",
+    default="openedx/openedx-translations",
+    help="The repository containing translation files",
 )
-@click.option("--repository", "-r", help="The repository containing translation files")
-def pull(branch, directory, language, repository):
+def pull(branch, directory, repository):
     """
-    Downloads translation files for languages from a repository branch.
+    Download the translation files from a repository branch.
     """
     click.echo(
         "Pulling translation files"
-        f"\n - directory: {', '.join(directory)}"
-        f"\n - language(s): {', '.join(language)}."
-        f"\n - repository: {repository}:{branch}"
+        f"\n - directory: {directory if directory else 'Not Specified'}"
+        f"\n - repository: {repository}"
+        f"\n - branch: {branch}"
     )
     sparse_checkout(directory, repository, branch)
-
-
-if __name__ == "__main__":
-    atlas()  # pylint: disable=no-value-for-parameter

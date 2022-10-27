@@ -13,7 +13,7 @@ packaging==21.3
 pep517==0.13.0
     # via build
 pip-tools==6.9.0
-    # via -r python-template/{{cookiecutter.placeholder_repo_name}}/requirements/pip-tools.in
+    # via -r requirements/pip-tools.in
 pyparsing==3.0.9
     # via packaging
 tomli==2.0.1

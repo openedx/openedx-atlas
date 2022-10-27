@@ -78,7 +78,9 @@ with open(
 setup(
     name="openedx-atlas",
     version=VERSION,
-    description="""An Open edX CLI tool for moving translation files from openedx-translations""",
+    description=(
+        """An Open edX CLI tool for moving translation files from openedx-translations"""
+    ),
     long_description=README + "\n\n" + CHANGELOG,
     long_description_content_type="text/x-rst",
     author="tCRIL",
