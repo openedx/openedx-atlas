@@ -41,7 +41,7 @@ def test_config_file(mock_sparse_checkout):
     runner = CliRunner()
 
     # invoke atlas with a configuration file
-    result = runner.invoke(atlas, ["--config", "tests/atlas.yml", "pull"])
+    result = runner.invoke(atlas, ["--config", "tests/test_config.yml", "pull"])
 
     # Assert that atlas pull was called
     assert mock_sparse_checkout.called
@@ -61,7 +61,7 @@ def test_config_file(mock_sparse_checkout):
 
 @patch("openedx_atlas.main.sparse_checkout")
 def test_full_flags(mock_sparse_checkout):
-    """Tests the options with a configuration file"""
+    """Tests the options with configuration full flags"""
     # This is a way to run Click commands inside Python
     runner = CliRunner()
 
@@ -97,7 +97,7 @@ def test_full_flags(mock_sparse_checkout):
 
 @patch("openedx_atlas.main.sparse_checkout")
 def test_short_flags(mock_sparse_checkout):
-    """Tests the options with a configuration file"""
+    """Tests the options with configuration short flags"""
     # This is a way to run Click commands inside Python
     runner = CliRunner()
 

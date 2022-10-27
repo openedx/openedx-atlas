@@ -1,7 +1,0 @@
-pull:
-  branch: main
-  directory: credentials
-  language:
-    - en
-    - xx
-  repository: openedx/openedx-translations
