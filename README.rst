@@ -59,19 +59,8 @@ How To Contribute
 Contributions are very welcome.
 
 Please read
-`How To Contribute <https://github.com/openedx/edx-platform/blob/master/CONTRIBUTING.rst>`_
+`How To Contribute <https://openedx.atlassian.net/wiki/spaces/COMM/pages/941457737/How+to+start+contributing+to+the+Open+edX+code+base>`_
 for details.
-
-Even though they were written with ``edx-platform`` in mind, the guidelines should be
-followed for Open edX code in general.
-
-PR description template should be automatically applied if you are sending PR from github
-interface; otherwise you can find it it at
-`PULL_REQUEST_TEMPLATE.md <https://github.com/openedx/code-annotations/blob/master/.github/PULL_REQUEST_TEMPLATE.md>`_
-
-Issue report template should be automatically applied if you are sending it from github UI
-as well; otherwise you can find it at
-`ISSUE_TEMPLATE.md <https://github.com/openedx/code-annotations/blob/master/.github/ISSUE_TEMPLATE.md>`_
 
 Getting Help
 ------------
