@@ -84,7 +84,7 @@ setup(
     long_description=README + "\n\n" + CHANGELOG,
     long_description_content_type="text/x-rst",
     author="tCRIL",
-    author_email="oscm@edx.org",
+    author_email="oscm@tcril.org",
     url="https://github.com/openedx/openedx-atlas",
     packages=[
         "openedx_atlas",
