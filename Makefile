@@ -59,7 +59,7 @@ quality: ## check coding style with pycodestyle and pylint
 requirements: ## install development environment requirements
 	pip install -r requirements/pip.txt
 	pip install -r requirements/pip-tools.txt
-	pip-sync requirements/dev.txt
+	pip-sync requirements/dev.txt requirements/private.*
 
 test: clean ## run tests in the current virtualenv
 	pytest
