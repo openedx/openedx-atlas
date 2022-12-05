@@ -1,7 +1,0 @@
-include AUTHORS
-include CHANGELOG.rst
-include CONTRIBUTING.rst
-include LICENSE
-include README.rst
-include requirements/base.in
-recursive-include code_annotations *.html *.png *.gif *js *.css *jpg *jpeg *svg *py *.yaml *.yml

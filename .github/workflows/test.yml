@@ -1,0 +1,46 @@
+name: Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  shellspec-linux:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: install shellcheck
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y shellcheck
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+    - name: install shellspec
+      run: |
+        brew tap shellspec/shellspec
+        brew install shellspec
+    - name: install getoptions
+      run: |
+        brew tap ko1nksm/getoptions
+        brew install getoptions
+    - name: run shellspec
+      run: shellspec
+  shellspec-mac:
+    runs-on: macos-12
+    steps:
+    - uses: actions/checkout@v3
+    - name: install shellcheck
+      run: brew install shellcheck
+    - name: install shellspec
+      run: |
+        brew tap shellspec/shellspec
+        brew install shellspec
+    - name: install getoptions
+      run: |
+        brew tap ko1nksm/getoptions
+        brew install getoptions
+    - name: run shellspec
+      run: shellspec
