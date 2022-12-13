@@ -21,6 +21,7 @@ necessary to run any application in English.
 Installing Locally
 ------------------
 
+* Ensure ``git`` is installed and in your ``PATH``
 * Download ``atlas`` from the `latest release <https://github.com/openedx/openedx-atlas/releases/latest/>`_, or from the `main branch <https://github.com/openedx/openedx-atlas/blob/main/atlas>`_
 * Allow execution ``chmod +x atlas``
 * Either add ``atlas`` to your ``PATH``, or run using ``./atlas``
@@ -30,7 +31,7 @@ Usage
 
 Atlas is a CLI tool that has essentially one command: `atlas pull`
 
-Atlas defaults to using a configuration file named `atlas.yaml` placed
+Atlas defaults to using a configuration file named `atlas.yml` placed
 in the root directory. Configuration file:
 
 pull:
