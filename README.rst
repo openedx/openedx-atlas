@@ -18,12 +18,20 @@ cloning a repository with translation files kept in openedx-translations. For in
 when building a docker image or testing localization strings locally. It should not be
 necessary to run any application in English.
 
+Installing Locally
+------------------
+
+* Ensure ``git`` is installed and in your ``PATH``
+* Download ``atlas`` from the `latest release <https://github.com/openedx/openedx-atlas/releases/latest/>`_, or from the `main branch <https://github.com/openedx/openedx-atlas/blob/main/atlas>`_
+* Allow execution ``chmod +x atlas``
+* Either add ``atlas`` to your ``PATH``, or run using ``./atlas``
+
 Usage
 -----
 
 Atlas is a CLI tool that has essentially one command: `atlas pull`
 
-Atlas defaults to using a configuration file named `atlas.yaml` placed
+Atlas defaults to using a configuration file named `atlas.yml` placed
 in the root directory. Configuration file:
 
 pull:
@@ -32,7 +40,7 @@ pull:
   repository: <organization-name>/<repository-name>
 
 Atlas can also use a configuration file in a different path using the `--config` flag
-after `atlas`: `atlas --config pull`.
+after `atlas`: `atlas pull --config config.yml`.
 
 Atlas can also be used without a configuration file by using the flags below after
 `atlas pull`.
@@ -40,6 +48,19 @@ Atlas can also be used without a configuration file by using the flags below aft
 `-b` or `--branch`
 `-r` or `--repository`
 `-d` or `--directory`
+
+Running Automated Tests Locally
+-------------------------------
+
+**Install**
+
+* `ShellSpec <https://github.com/shellspec/shellspec#installation>`_
+* `ShellCheck <https://github.com/koalaman/shellcheck#installing>`_
+* `getoptions <https://github.com/ko1nksm/getoptions#installation>`_
+
+**Run**
+
+``make test``
 
 Documentation
 -------------
