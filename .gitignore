@@ -20,6 +20,9 @@ __pycache__
 /lib
 /lib64
 
+# getoptions parser generator binaries for Makefile
+/.bin
+
 # Installer logs
 pip-log.txt
 

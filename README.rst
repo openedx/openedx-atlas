@@ -52,11 +52,10 @@ Atlas can also be used without a configuration file by using the flags below aft
 Running Automated Tests Locally
 -------------------------------
 
-**Install**
+**Installing ShellCheck**
 
-* `ShellSpec <https://github.com/shellspec/shellspec#installation>`_
-* `ShellCheck <https://github.com/koalaman/shellcheck#installing>`_
-* `getoptions <https://github.com/ko1nksm/getoptions#installation>`_
+``Makefile`` attempts to install ShellCheck, but if it fails it can be
+installed as shown in `the ShellCheck installation guide <https://github.com/koalaman/shellcheck#installing>`_.
 
 **Run**
 
