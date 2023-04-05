@@ -22,6 +22,7 @@ parser_definition_pull() {
 	param		FILTER	    -f	--filter			-- "List of patterns to select which files and sub-directories to checkout."
 	flag		VERBOSE		-v	--verbose			-- "verbose output to terminal"
 	flag		SILENT		-s	--silent			-- "no output to terminal"
+	flag		DRY_RUN		-n	--dry-run			-- "Do not copy files. Print sparse-checkout rules, git checkout tree and copied tree."
 	disp    :usage_pull  -h --help
 }
 # @end
@@ -118,6 +119,7 @@ DIRECTORY=''
 FILTER=''
 VERBOSE=''
 SILENT=''
+DRY_RUN=''
 REST=''
 parse_pull() {
   OPTIND=$(($#+1))
@@ -130,7 +132,7 @@ parse_pull() {
       -[brdf]?*) OPTARG=$1; shift
         eval 'set -- "${OPTARG%"${OPTARG#??}"}" "${OPTARG#??}"' ${1+'"$@"'}
         ;;
-      -[vsh]?*) OPTARG=$1; shift
+      -[vsnh]?*) OPTARG=$1; shift
         eval 'set -- "${OPTARG%"${OPTARG#??}"}" -"${OPTARG#??}"' ${1+'"$@"'}
         OPTARG= ;;
     esac
@@ -169,6 +171,11 @@ parse_pull() {
         [ "${OPTARG:-}" ] && OPTARG=${OPTARG#*\=} && set "noarg" "$1" && break
         eval '[ ${OPTARG+x} ] &&:' && OPTARG='1' || OPTARG=''
         SILENT="$OPTARG"
+        ;;
+      '-n'|'--dry-run')
+        [ "${OPTARG:-}" ] && OPTARG=${OPTARG#*\=} && set "noarg" "$1" && break
+        eval '[ ${OPTARG+x} ] &&:' && OPTARG='1' || OPTARG=''
+        DRY_RUN="$OPTARG"
         ;;
       '-h'|'--help')
         usage_pull
@@ -209,6 +216,7 @@ Options:
   -f, --filter FILTER         List of patterns to select which files and sub-directories to checkout.
   -v, --verbose               verbose output to terminal
   -s, --silent                no output to terminal
+  -n, --dry-run               Do not copy files. Print sparse-checkout rules, git checkout tree and copied tree.
   -h, --help                  
 GETOPTIONSHERE
 }
@@ -288,6 +296,16 @@ display_pull_params() {
   echo " - filter: ${pull_filter:-Not Specified}"
 }
 
+print_directory_tree() {
+    # Use `$ tree` when available with a fallback to `$ find . -type f`
+    if ! tree 2>/dev/null;
+    then
+        echo
+        find . -type f
+        echo
+    fi
+}
+
 pull_translations() {
   if [ -z "$SILENT" ];
   then
@@ -351,8 +369,25 @@ pull_translations() {
   # Retrieve translation files from the repo
   git pull $quiet origin "$pull_branch"
 
+  # Extra debugging output for sparse-checkout with --dry-run flag
+  if [ "$DRY_RUN" ] && [ -z "$SILENT" ];
+  then
+      echo "Done."
+
+      echo "Printing all 'git sparse-checkout' rules:"
+      git sparse-checkout list
+  fi
+
   # Remove .git directory
   rm -rf .git
+
+  if [ "$DRY_RUN" ] && [ -z "$SILENT" ];
+  then
+      echo "Done."
+
+      echo "Listing the sparse-checkout file tree from the checked-out repository:"
+      print_directory_tree
+  fi
 
   # Leave the temp dir
   cd ..
@@ -365,12 +400,35 @@ pull_translations() {
     echo "Copying translations from \"./translations_TEMP/$pull_directory\" to \"./$pull_directory\"..."
   fi
 
+  if [ "$DRY_RUN" ];
+  then
+    target_directory=translations_traget_TEMP
+    mkdir -p translations_traget_TEMP
+  else
+    target_directory=.
+  fi
+
   # Copy translation files out of the temp dir
   if [ "$pull_directory" ];
   then
-    cp -r translations_TEMP/"$pull_directory"/* ./
+    cp -r translations_TEMP/"$pull_directory"/* $target_directory/
   else
-    cp -r translations_TEMP/* ./
+    cp -r translations_TEMP/* $target_directory/
+  fi
+
+  if [ "$DRY_RUN" ];
+  then
+    if [ -z "$SILENT" ];
+    then
+      echo "Done."
+
+      echo "Listing the copied files tree in the local file system:"
+      (cd translations_traget_TEMP || exit; print_directory_tree)
+      echo "Done."
+
+      echo "Removing temporary translations_traget_TEMP directory..."
+    fi
+    rm -rf translations_traget_TEMP
   fi
 
   # finished "Copying translations from <temp dir> to <dest dir>..." step
@@ -391,7 +449,12 @@ pull_translations() {
 
     # finished pulling translations!
     echo ""
-    echo "Translations pulled successfully!"
+    if [ "$DRY_RUN" ];
+    then
+      echo "Translations pulled successfully in dry-run mode without copying!"
+    else
+      echo "Translations pulled successfully!"
+    fi
   fi
 }
 

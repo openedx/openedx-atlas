@@ -108,3 +108,55 @@ git sparse-checkout add pull_directory/**/fr_CA.*
 git pull origin pull_branch'
   End
 End
+
+Describe 'Pull with dry-run flag'
+  Include ./atlas
+
+  git() {
+      echo "git $@"
+  }
+
+  cp() {
+    echo "cp $@"
+  }
+
+  tree() {
+    echo "tree"
+  }
+
+
+  setup() { pull_directory="pull_directory" pull_repository="pull_repository" pull_branch="pull_branch"; DRY_RUN=1; VERBOSE=1; }
+  BeforeEach 'setup'
+
+  It 'print file trees'
+    When call pull_translations
+    The lines of output should equal 27
+    The output should eq "Creating a temporary Git repository to pull translations into \"./translations_TEMP\"...
+git init -b main
+git remote add -f origin https://github.com/pull_repository.git
+Done.
+Pulling translations into \"./translations_TEMP/pull_directory\"...
+git sparse-checkout set !*
+git sparse-checkout add pull_directory/
+git pull origin pull_branch
+Done.
+Printing all 'git sparse-checkout' rules:
+git sparse-checkout list
+Done.
+Listing the sparse-checkout file tree from the checked-out repository:
+tree
+Done.
+Copying translations from \"./translations_TEMP/pull_directory\" to \"./pull_directory\"...
+cp -r translations_TEMP/pull_directory/* translations_traget_TEMP/
+Done.
+Listing the copied files tree in the local file system:
+tree
+Done.
+Removing temporary translations_traget_TEMP directory...
+Done.
+Removing temporary directory...
+Done.
+
+Translations pulled successfully in dry-run mode without copying!"
+  End
+End
