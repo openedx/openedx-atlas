@@ -2,3 +2,4 @@ pull:
   branch: try-using-bash
   directory: example-translations/repos/json
   repository: brian-smith-tcril/openedx-atlas
+  filter: ar de es_419

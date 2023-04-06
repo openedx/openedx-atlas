@@ -8,7 +8,7 @@ parser_definition() {
 				"Atlas is a CLI tool that has essentially one command: \`atlas pull\`\n \nAtlas defaults to using a configuration file named \`atlas.yml\` placed\nin the root directory. Configuration file:\n \npull:\n  branch: <branch-name>\n  directory <directory-name>\n  repository: <organization-name>/<repository-name>\n \nAtlas can also use a configuration file in a different path using the \`--config\` flag\nafter \`atlas\`: \`atlas pull --config config.yml\`.\n \nAtlas can also be used without a configuration file by using the flags below after\n\`atlas pull\`.\n \n\`-b\` or \`--branch\`\n\`-r\` or \`--repository\`\n\`-d\` or \`--directory\`" ''
 	msg 	 -- '' 'Commands:'
 	cmd pull -- "pull"
-	disp    :usage  -h --help	
+	disp    :usage  -h --help
 }
 
 parser_definition_pull() {
@@ -19,9 +19,10 @@ parser_definition_pull() {
 	param		BRANCH		-b	--branch			-- "A branch of translation files"
 	param		REPOSITORY	-r	--repository		-- "The repository containing translation files"
 	param		DIRECTORY	-d	--directory			-- "Directory (name of the repository) containing translations to be downloaded"
+	param		FILTER	    -f	--filter			-- "List of patterns to select which files and sub-directories to checkout."
 	flag		VERBOSE		-v	--verbose			-- "verbose output to terminal"
 	flag		SILENT		-s	--silent			-- "no output to terminal"
-	disp    :usage_pull  -h --help	
+	disp    :usage_pull  -h --help
 }
 # @end
 
@@ -114,6 +115,7 @@ CONFIG=''
 BRANCH=''
 REPOSITORY=''
 DIRECTORY=''
+FILTER=''
 VERBOSE=''
 SILENT=''
 REST=''
@@ -125,7 +127,7 @@ parse_pull() {
         eval 'set -- "${OPTARG%%\=*}" "${OPTARG#*\=}"' ${1+'"$@"'}
         ;;
       --no-*|--without-*) unset OPTARG ;;
-      -[brd]?*) OPTARG=$1; shift
+      -[brdf]?*) OPTARG=$1; shift
         eval 'set -- "${OPTARG%"${OPTARG#??}"}" "${OPTARG#??}"' ${1+'"$@"'}
         ;;
       -[vsh]?*) OPTARG=$1; shift
@@ -152,6 +154,11 @@ parse_pull() {
         [ $# -le 1 ] && set "required" "$1" && break
         OPTARG=$2
         DIRECTORY="$OPTARG"
+        shift ;;
+      '-f'|'--filter')
+        [ $# -le 1 ] && set "required" "$1" && break
+        OPTARG=$2
+        FILTER="$OPTARG"
         shift ;;
       '-v'|'--verbose')
         [ "${OPTARG:-}" ] && OPTARG=${OPTARG#*\=} && set "noarg" "$1" && break
@@ -199,6 +206,7 @@ Options:
   -b, --branch BRANCH         A branch of translation files
   -r, --repository REPOSITORY The repository containing translation files
   -d, --directory DIRECTORY   Directory (name of the repository) containing translations to be downloaded
+  -f, --filter FILTER         List of patterns to select which files and sub-directories to checkout.
   -v, --verbose               verbose output to terminal
   -s, --silent                no output to terminal
   -h, --help                  
@@ -243,6 +251,7 @@ set_pull_params() {
       pull_directory=""
       pull_repository="openedx/openedx-translations"
       pull_branch="main"
+      pull_filter=""
     fi
   fi
 
@@ -261,6 +270,13 @@ set_pull_params() {
   then
       pull_branch=$BRANCH
   fi
+
+  if [ "$FILTER" ];
+  then
+      pull_filter="$FILTER"
+  fi
+
+  pull_filter="$(echo "$pull_filter" | tr ',' ' ')"  # Accept comma and/or space separated directories list
 }
 
 display_pull_params() {
@@ -269,6 +285,7 @@ display_pull_params() {
   echo " - directory: ${pull_directory:-Not Specified}"
   echo " - repository: ${pull_repository:-Not Specified}"
   echo " - branch: ${pull_branch:-Not Specified}"
+  echo " - filter: ${pull_filter:-Not Specified}"
 }
 
 pull_translations() {
@@ -300,7 +317,7 @@ pull_translations() {
   else
     git remote add -f origin "$remote_url"
   fi
-  
+
   # finished "Creating a temporary Git repository to pull translations into <temp dir>..." step
   if [ -z "$SILENT" ];
   then
@@ -312,9 +329,23 @@ pull_translations() {
   # If a directory is specified, configure git for a sparse checkout
   if [ "$pull_directory" ];
   then
-    git config core.sparseCheckout true
-    git sparse-checkout init
-    git sparse-checkout set "$pull_directory"
+    # Reset git sparse-checkout list of include/exclude files
+    # Tells sparse checkout to ignore all files, except when otherwise noted
+    # See https://www.git-scm.com/docs/git-sparse-checkout for detailed implementation
+    git sparse-checkout set "!*"
+
+    if [ "$pull_filter" ];
+    then
+        for one_filter in $pull_filter;
+        do
+            # Include directories that matches the language pattern e.g. `/ar/`
+            git sparse-checkout add "$pull_directory/**/${one_filter}/**"
+            # Include files that matches the language pattern e.g. `ar.*`
+            git sparse-checkout add "$pull_directory/**/${one_filter}.*"
+        done
+    else
+        git sparse-checkout add "$pull_directory/"
+    fi
   fi
 
   # Retrieve translation files from the repo
@@ -382,10 +413,10 @@ if [ $# -gt 0 ]; then
       then
         display_pull_params
       fi
-      # allow mocking pull_translations 
+      # allow mocking pull_translations
       __ begin_pull_translations_mock __
       pull_translations
-      __ end_pull_translations_mock __      
+      __ end_pull_translations_mock __
       ;;
 		--) # no subcommand, arguments only
 	esac
