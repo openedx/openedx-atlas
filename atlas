@@ -12,13 +12,12 @@ parser_definition() {
 }
 
 parser_definition_pull() {
-	setup   REST help:usage_pull -- \
-		"Usage: atlas pull [options...] [arguments...]"
+	setup   PULL_REST help:usage_pull -- \
+		"Usage: atlas pull [options...] [directory mappings...]"
 	msg -- 'Options:'
 	param		CONFIG			--config			-- "path to alternative atlas.yaml configuration file"
 	param		BRANCH		-b	--branch			-- "A branch of translation files"
 	param		REPOSITORY	-r	--repository		-- "The repository containing translation files"
-	param		DIRECTORY	-d	--directory			-- "Directory (name of the repository) containing translations to be downloaded"
 	param		FILTER	    -f	--filter			-- "List of patterns to select which files and sub-directories to checkout."
 	flag		VERBOSE		-v	--verbose			-- "verbose output to terminal"
 	flag		SILENT		-s	--silent			-- "no output to terminal"
@@ -114,11 +113,10 @@ GETOPTIONSHERE
 CONFIG=''
 BRANCH=''
 REPOSITORY=''
-DIRECTORY=''
 FILTER=''
 VERBOSE=''
 SILENT=''
-REST=''
+PULL_REST=''
 parse_pull() {
   OPTIND=$(($#+1))
   while OPTARG= && [ $# -gt 0 ]; do
@@ -127,7 +125,7 @@ parse_pull() {
         eval 'set -- "${OPTARG%%\=*}" "${OPTARG#*\=}"' ${1+'"$@"'}
         ;;
       --no-*|--without-*) unset OPTARG ;;
-      -[brdf]?*) OPTARG=$1; shift
+      -[brf]?*) OPTARG=$1; shift
         eval 'set -- "${OPTARG%"${OPTARG#??}"}" "${OPTARG#??}"' ${1+'"$@"'}
         ;;
       -[vsh]?*) OPTARG=$1; shift
@@ -150,11 +148,6 @@ parse_pull() {
         OPTARG=$2
         REPOSITORY="$OPTARG"
         shift ;;
-      '-d'|'--directory')
-        [ $# -le 1 ] && set "required" "$1" && break
-        OPTARG=$2
-        DIRECTORY="$OPTARG"
-        shift ;;
       '-f'|'--filter')
         [ $# -le 1 ] && set "required" "$1" && break
         OPTARG=$2
@@ -176,13 +169,13 @@ parse_pull() {
       --)
         shift
         while [ $# -gt 0 ]; do
-          REST="${REST} \"\${$(($OPTIND-$#))}\""
+          PULL_REST="${PULL_REST} \"\${$(($OPTIND-$#))}\""
           shift
         done
         break ;;
       [-]?*) set "unknown" "$1"; break ;;
       *)
-        REST="${REST} \"\${$(($OPTIND-$#))}\""
+        PULL_REST="${PULL_REST} \"\${$(($OPTIND-$#))}\""
     esac
     shift
   done
@@ -200,12 +193,11 @@ parse_pull() {
 }
 usage_pull() {
 cat<<'GETOPTIONSHERE'
-Usage: atlas pull [options...] [arguments...]
+Usage: atlas pull [options...] [directory mappings...]
 Options:
       --config CONFIG         path to alternative atlas.yaml configuration file
   -b, --branch BRANCH         A branch of translation files
   -r, --repository REPOSITORY The repository containing translation files
-  -d, --directory DIRECTORY   Directory (name of the repository) containing translations to be downloaded
   -f, --filter FILTER         List of patterns to select which files and sub-directories to checkout.
   -v, --verbose               verbose output to terminal
   -s, --silent                no output to terminal
@@ -256,9 +248,10 @@ set_pull_params() {
   fi
 
   # Override vars based on args
-  if [ "$DIRECTORY" ];
+  if [ $# -gt 0 ];
   then
-      pull_directory=$DIRECTORY
+    # Due to sh/dash compatibility, arrays are not supported, therefore directories with spaces aren't supported.
+    pull_directory="$*"
   fi
 
   if [ "$REPOSITORY" ];
@@ -279,6 +272,12 @@ set_pull_params() {
   pull_filter="$(echo "$pull_filter" | tr ',' ' ')"  # Accept comma and/or space separated directories list
 }
 
+contains_substring() {
+  # Checks if $1 string contains $2.
+  printf '%s' "$1" | grep --fixed-strings --silent -e "$2"
+  return $?
+}
+
 display_pull_params() {
   # Output configured vars to user
   echo "Pulling translation files"
@@ -289,6 +288,14 @@ display_pull_params() {
 }
 
 pull_translations() {
+  if [ -z "$pull_directory" ];
+  then
+      echo "Missing positional argument:" >&2
+      echo "  At least one DIRECTORY map is required as a positional argument:" >&2
+      echo "  $ atlas pull DIRECTORY_FROM1:DIRECTORY_TO1 DIRECTORY_FROM2:DIRECTORY_TO2 ..." >&2
+      return 1
+  fi
+
   if [ -z "$SILENT" ];
   then
     echo "Creating a temporary Git repository to pull translations into \"./translations_TEMP\"..."
@@ -323,29 +330,40 @@ pull_translations() {
   then
     echo "Done."
 
-    echo "Pulling translations into \"./translations_TEMP/$pull_directory\"..."
+    echo "Setting git sparse-checkout rules..."
   fi
 
-  # If a directory is specified, configure git for a sparse checkout
-  if [ "$pull_directory" ];
-  then
-    # Reset git sparse-checkout list of include/exclude files
-    # Tells sparse checkout to ignore all files, except when otherwise noted
-    # See https://www.git-scm.com/docs/git-sparse-checkout for detailed implementation
-    git sparse-checkout set "!*"
+  # Reset git sparse-checkout list of include/exclude files
+  # Tells sparse checkout to ignore all files, except when otherwise noted
+  # See https://www.git-scm.com/docs/git-sparse-checkout for detailed implementation
+  git sparse-checkout set "!*"
+
+  # Set sparse-checkout rules
+  for directory_from_to in $pull_directory;
+  do
+    directory_from=$(echo "${directory_from_to}" | cut -f1 -d ':')
 
     if [ "$pull_filter" ];
     then
-        for one_filter in $pull_filter;
-        do
-            # Include directories that matches the language pattern e.g. `/ar/`
-            git sparse-checkout add "$pull_directory/**/${one_filter}/**"
-            # Include files that matches the language pattern e.g. `ar.*`
-            git sparse-checkout add "$pull_directory/**/${one_filter}.*"
-        done
+      for one_filter in $pull_filter;
+      do
+        # Include directories that matches the language pattern e.g. `/ar/`
+        git sparse-checkout add "$directory_from/**/${one_filter}/**"
+        # Include files that matches the language pattern e.g. `ar.*`
+        git sparse-checkout add "$directory_from/**/${one_filter}.*"
+      done
     else
-        git sparse-checkout add "$pull_directory/"
+      # Include all files within provided DIRECTORY if no filter is specified.
+      git sparse-checkout add "$directory_from/**"
     fi
+  done
+
+  # finished "Creating a temporary Git repository to pull translations into <temp dir>..." step
+  if [ -z "$SILENT" ];
+  then
+    echo "Done."
+
+    echo "Pulling translation files from the repository..."
   fi
 
   # Retrieve translation files from the repo
@@ -358,20 +376,29 @@ pull_translations() {
   cd ..
 
   # finished "Pulling translations into <temp dir>..." step
-  if [ -z "$SILENT" ];
-  then
-    echo "Done."
-
-    echo "Copying translations from \"./translations_TEMP/$pull_directory\" to \"./$pull_directory\"..."
-  fi
 
   # Copy translation files out of the temp dir
-  if [ "$pull_directory" ];
-  then
-    cp -r translations_TEMP/"$pull_directory"/* ./
-  else
-    cp -r translations_TEMP/* ./
-  fi
+  for directory_from_to in $pull_directory;
+  do
+    directory_from="$(echo "${directory_from_to}" | cut -f1 -d ':')"
+    directory_from="./translations_TEMP/${directory_from}"
+
+    # If no colon is provided then directory_to=. (aka working directory)
+    if contains_substring "$directory_from_to" ":";
+    then
+      directory_to="$(echo "${directory_from_to}" | cut -f2 -d ':')"
+    else
+      directory_to=.
+    fi
+
+    mkdir -p "$directory_to"
+    if [ -z "$SILENT" ];
+    then
+      echo "Done."
+      echo "Copying translations from \"${directory_from}\" to \"./${directory_to}\"..."
+    fi
+    cp -r "${directory_from}"/* "${directory_to}"/ || exit 1
+  done
 
   # finished "Copying translations from <temp dir> to <dest dir>..." step
   if [ -z "$SILENT" ];
@@ -407,17 +434,17 @@ if [ $# -gt 0 ]; then
 	case $cmd in
 		pull)
 			parse_pull "$@"
-      set_pull_params
-
-      if [ -z "$SILENT" ];
-      then
-        display_pull_params
-      fi
-      # allow mocking pull_translations
-      __ begin_pull_translations_mock __
-      pull_translations
-      __ end_pull_translations_mock __
-      ;;
+            eval "set -- $PULL_REST"
+            set_pull_params "$@" # Make the arguments available to `set_pull_params`
+            if [ -z "$SILENT" ];
+            then
+              display_pull_params
+            fi
+            # allow mocking pull_translations
+            __ begin_pull_translations_mock __
+            pull_translations || exit 1
+            __ end_pull_translations_mock __
+            ;;
 		--) # no subcommand, arguments only
 	esac
 fi

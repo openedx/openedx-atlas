@@ -1,4 +1,4 @@
-Describe 'Pull without directory param'
+Describe 'Pull without directory mapping param'
   Include ./atlas
 
   git() {
@@ -12,23 +12,12 @@ Describe 'Pull without directory param'
   setup() { pull_repository="pull_repository" pull_branch="pull_branch"; VERBOSE=1; }
   BeforeEach 'setup'
 
-  It 'calls everything properly'
+  It 'Fails and require a directory mapping positional parameter'
     When call pull_translations
-    The lines of output should equal 14
-    The line 1 of output should equal 'Creating a temporary Git repository to pull translations into "./translations_TEMP"...'
-    The line 2 of output should equal 'git init -b main'
-    The line 3 of output should equal 'git remote add -f origin https://github.com/pull_repository.git'
-    The line 4 of output should equal 'Done.'
-    The line 5 of output should equal 'Pulling translations into "./translations_TEMP/"...'
-    The line 6 of output should equal 'git pull origin pull_branch'
-    The line 7 of output should equal 'Done.'
-    The line 8 of output should equal 'Copying translations from "./translations_TEMP/" to "./"...'
-    The line 9 of output should equal 'cp -r translations_TEMP/* ./'
-    The line 10 of output should equal 'Done.'
-    The line 11 of output should equal 'Removing temporary directory...'
-    The line 12 of output should equal 'Done.'
-    The line 13 of output should equal ''
-    The line 14 of output should equal 'Translations pulled successfully!'
+    The status should be failure
+    The error should equal 'Missing positional argument:
+  At least one DIRECTORY map is required as a positional argument:
+  $ atlas pull DIRECTORY_FROM1:DIRECTORY_TO1 DIRECTORY_FROM2:DIRECTORY_TO2 ...'
 
   End
 End
@@ -45,28 +34,30 @@ Describe 'Pull with directory param'
   }
 
 
-  setup() { pull_directory="pull_directory" pull_repository="pull_repository" pull_branch="pull_branch"; VERBOSE=1; }
+  setup() { pull_directory="pull_directory:local_dir" pull_repository="pull_repository" pull_branch="pull_branch"; VERBOSE=1; }
   BeforeEach 'setup'
 
   It 'calls everything properly'
     When call pull_translations
-    The lines of output should equal 16
-    The line 1 of output should equal 'Creating a temporary Git repository to pull translations into "./translations_TEMP"...'
-    The line 2 of output should equal 'git init -b main'
-    The line 3 of output should equal 'git remote add -f origin https://github.com/pull_repository.git'
-    The line 4 of output should equal 'Done.'
-    The line 5 of output should equal 'Pulling translations into "./translations_TEMP/pull_directory"...'
-    The line 6 of output should equal 'git sparse-checkout set !*'
-    The line 7 of output should equal 'git sparse-checkout add pull_directory/'
-    The line 8 of output should equal 'git pull origin pull_branch'
-    The line 9 of output should equal 'Done.'
-    The line 10 of output should equal 'Copying translations from "./translations_TEMP/pull_directory" to "./pull_directory"...'
-    The line 11 of output should equal 'cp -r translations_TEMP/pull_directory/* ./'
-    The line 12 of output should equal 'Done.'
-    The line 13 of output should equal 'Removing temporary directory...'
-    The line 14 of output should equal 'Done.'
-    The line 15 of output should equal ''
-    The line 16 of output should equal 'Translations pulled successfully!'
+    The lines of output should equal 18
+    The output should equal 'Creating a temporary Git repository to pull translations into "./translations_TEMP"...
+git init -b main
+git remote add -f origin https://github.com/pull_repository.git
+Done.
+Setting git sparse-checkout rules...
+git sparse-checkout set !*
+git sparse-checkout add pull_directory/**
+Done.
+Pulling translation files from the repository...
+git pull origin pull_branch
+Done.
+Copying translations from "./translations_TEMP/pull_directory" to "./local_dir"...
+cp -r ./translations_TEMP/pull_directory/* local_dir/
+Done.
+Removing temporary directory...
+Done.
+
+Translations pulled successfully!'
   End
 End
 
