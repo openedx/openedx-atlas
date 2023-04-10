@@ -98,10 +98,10 @@ Describe 'Test full flags'
   }
 
   It 'correctly reads full flag params'
-    When run source ./atlas pull --directory full_flag_directory --repository full_flag_repository --branch full_flag_branch --filter ar,es_419
+    When run source ./atlas pull --repository full_flag_repository --branch full_flag_branch --filter ar,es_419 positional_arg_directory:to_dir
     The lines of output should equal 5
     The line 1 of output should equal 'Pulling translation files'
-    The line 2 of output should equal ' - directory: full_flag_directory'
+    The line 2 of output should equal ' - directory: positional_arg_directory:to_dir'
     The line 3 of output should equal ' - repository: full_flag_repository'
     The line 4 of output should equal ' - branch: full_flag_branch'
     The line 5 of output should equal ' - filter: ar es_419'
@@ -120,13 +120,35 @@ Describe 'Test short flags'
   }
 
   It 'correctly reads short flag params'
-    When run source ./atlas pull -d short_flag_directory -r short_flag_repository -b short_flag_branch -f 'ar es_419'
+    When run source ./atlas pull -r short_flag_repository -b short_flag_branch -f 'ar es_419' positional_arg_directory:mapped_to_dir
     The lines of output should equal 5
     The line 1 of output should equal 'Pulling translation files'
-    The line 2 of output should equal ' - directory: short_flag_directory'
+    The line 2 of output should equal ' - directory: positional_arg_directory:mapped_to_dir'
     The line 3 of output should equal ' - repository: short_flag_repository'
     The line 4 of output should equal ' - branch: short_flag_branch'
     The line 5 of output should equal ' - filter: ar es_419'
+    The variable PULL_TRANSLATIONS_CALLED should equal true
+  End
+End
+
+
+Describe 'Test short flags'
+  # mock pull translations
+  Intercept begin_pull_translations_mock
+  __begin_pull_translations_mock__() {
+    pull_translations() {
+      PULL_TRANSLATIONS_CALLED=true
+      %preserve PULL_TRANSLATIONS_CALLED
+    }
+  }
+
+  It 'correctly reads multiple directories and separate them in spaces'
+    When run source ./atlas pull -r short_flag_repository  \
+                            orange_dir:foo_local_dir \
+                            blue_dir:bazz_local_dir
+    The lines of output should equal 5
+    The line 1 of output should equal 'Pulling translation files'
+    The line 2 of output should equal ' - directory: orange_dir:foo_local_dir blue_dir:bazz_local_dir'
     The variable PULL_TRANSLATIONS_CALLED should equal true
   End
 End

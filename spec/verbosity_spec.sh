@@ -35,9 +35,9 @@ Describe 'Test default verbosity'
     GIT_CALLED_VERBOSELY=false
     GIT_CALLED_NOT_VERBOSELY=false
     CP_CALLED=false
-    When run source ./atlas pull
-    The lines of output should equal 15
-    The line 15 of output should equal 'Translations pulled successfully!'
+    When run source ./atlas pull dir_from:dir_to
+    The lines of output should equal 17
+    The line 17 of output should equal 'Translations pulled successfully!'
     The variable GIT_CALLED_QUIETLY should equal true
     The variable GIT_CALLED_NOT_QUIETLY should equal false
     The variable GIT_CALLED_VERBOSELY should equal false
@@ -51,14 +51,18 @@ Describe 'Test silent flag'
   Intercept begin_pull_translations_mock
   __begin_pull_translations_mock__() {
     git() {
-      if [ "$quiet" ];
+      # Don't check `git sparse-checkout` for `--quiet` because it prints no output.
+      if [ "$1" != "sparse-checkout" ];
       then
-        GIT_CALLED_QUIETLY=true
-      else
-        GIT_CALLED_NOT_QUIETLY=true
+        if [ "$quiet" ];
+        then
+          GIT_CALLED_QUIETLY=true
+        else
+          GIT_CALLED_NOT_QUIETLY=true
+        fi
+        %preserve GIT_CALLED_QUIETLY
+        %preserve GIT_CALLED_NOT_QUIETLY
       fi
-      %preserve GIT_CALLED_QUIETLY
-      %preserve GIT_CALLED_NOT_QUIETLY
     }
 
     cp() {
@@ -71,8 +75,9 @@ Describe 'Test silent flag'
     GIT_CALLED_QUIETLY=false
     GIT_CALLED_NOT_QUIETLY=false
     CP_CALLED=false
-    When run source ./atlas pull --silent
+    When run source ./atlas pull --silent dir_from:dir_to
     The lines of output should equal 0
+    The output should equal ""
     The variable GIT_CALLED_QUIETLY should equal true
     The variable GIT_CALLED_NOT_QUIETLY should equal false
     The variable CP_CALLED should equal true
@@ -82,8 +87,9 @@ Describe 'Test silent flag'
     GIT_CALLED_QUIETLY=false
     GIT_CALLED_NOT_QUIETLY=false
     CP_CALLED=false
-    When run source ./atlas pull -s
+    When run source ./atlas pull -s dir_from:dir_to
     The lines of output should equal 0
+    The output should equal ""
     The variable GIT_CALLED_QUIETLY should equal true
     The variable GIT_CALLED_NOT_QUIETLY should equal false
     The variable CP_CALLED should equal true
@@ -127,9 +133,9 @@ Describe 'Test verbose flag'
     GIT_CALLED_VERBOSELY=false
     GIT_CALLED_NOT_VERBOSELY=false
     CP_CALLED=false
-    When run source ./atlas pull --verbose
-    The lines of output should equal 15
-    The line 15 of output should equal 'Translations pulled successfully!'
+    When run source ./atlas pull --verbose dir_from:dir_to
+    The lines of output should equal 17
+    The line 17 of output should equal 'Translations pulled successfully!'
     The variable GIT_CALLED_QUIETLY should equal false
     The variable GIT_CALLED_NOT_QUIETLY should equal true
     The variable GIT_CALLED_VERBOSELY should equal true
@@ -143,9 +149,9 @@ Describe 'Test verbose flag'
     GIT_CALLED_VERBOSELY=false
     GIT_CALLED_NOT_VERBOSELY=false
     CP_CALLED=false
-    When run source ./atlas pull -v
-    The lines of output should equal 15
-    The line 15 of output should equal 'Translations pulled successfully!'
+    When run source ./atlas pull -v dir_from:dir_to
+    The lines of output should equal 17
+    The line 17 of output should equal 'Translations pulled successfully!'
     The variable GIT_CALLED_QUIETLY should equal false
     The variable GIT_CALLED_NOT_QUIETLY should equal true
     The variable GIT_CALLED_VERBOSELY should equal true
