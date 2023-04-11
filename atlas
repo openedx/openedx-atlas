@@ -4,8 +4,77 @@
 
 # @getoptions
 parser_definition() {
-	setup       REST help:usage -- \
-				"Atlas is a CLI tool that has essentially one command: \`atlas pull\`\n \nAtlas defaults to using a configuration file named \`atlas.yml\` placed\nin the root directory. Configuration file:\n \npull:\n  branch: <branch-name>\n  directory <directory-name>\n  repository: <organization-name>/<repository-name>\n \nAtlas can also use a configuration file in a different path using the \`--config\` flag\nafter \`atlas\`: \`atlas pull --config config.yml\`.\n \nAtlas can also be used without a configuration file by using the flags below after\n\`atlas pull\`.\n \n\`-b\` or \`--branch\`\n\`-r\` or \`--repository\`\n\`-d\` or \`--directory\`" ''
+    _ATLAS_USAGE_HELP="Atlas is a CLI tool that has essentially one command: \`atlas pull\`
+
+Configuration file:
+
+    Atlas defaults to using a configuration file named \`atlas.yml\` placed
+    in the root directory. Configuration file:
+
+    pull:
+      repository: <organization-name>/<repository-name>
+      branch: <branch-name>
+      directory: <repo-directory-name>:<local-dir-name> ...
+      filter: <pattern> ...
+
+    Atlas can also use a configuration file in a different path using the \`--config\` flag
+    after \`atlas\`: \`atlas pull --config config.yml\`.
+
+    Atlas can also be used without a configuration file by using the flags below after
+    \`atlas pull\`.
+
+Positional arguments DIRECTORY MAPPINGS ...
+
+   One or more directory map pair separated by a colon (:) e.g. FROM_DIR:TO_DIR.
+
+   The first directory (FROM_DIR) represents a directory in the git repository.
+   The second directory (TO_DIR) represents a local directory to copy files to.
+
+   At least one directory pair is required:
+
+     $ atlas pull frontend-app-learning/messages:learning-app frontend-lib-test/messages:test-lib
+
+   This syntax is inspired by \`docker --volume from_dir:to_dir\` mounting syntax.
+
+Options:
+
+    \`-r\` or \`--repository\`:
+        A repository GitHub repo slug defaults to 'openedx/openedx-translations'.
+
+    \`-b\` or \`--branch\`:
+        The git branch defaults to 'main'.
+
+    \`-f\` or \`--filter\`
+       A comma-separated (or space-separated) list of patterns match files and sub-directories.
+       This is mainly useful to filter specific languages to download.
+
+       The same filter is applied to all DIRECTORY MAPPINGS arguments.
+
+          --filter=fr_CA,ar,es_419 will match both directories named 'es_419' and files named 'es_419.json'
+                                   among others
+
+Example:
+
+    $ cd frontend-app-learning/src/i18n/messages
+    $ atlas pull --filter=fr_CA,ar,es_419 \\
+            translations/frontend-app-learning/src/i18n/messages:frontend-app-learning \\
+            translations/frontend-component-header/src/i18n/messages:frontend-component-header
+
+Will result in the following tree:
+
+    ├── frontend-app-learning
+    │   ├── ar.json
+    │   ├── es_419.json
+    │   └── fr_CA.json
+    └── frontend-component-header
+        ├── ar.json
+        ├── es_419.json
+        └── fr_CA.json
+
+More examples are available in the repository docs: https://github.com/openedx/openedx-translations .
+"
+
+	setup       REST help:usage -- "${_ATLAS_USAGE_HELP}" ''
 	msg 	 -- '' 'Commands:'
 	cmd pull -- "pull"
 	disp    :usage  -h --help
@@ -79,24 +148,74 @@ parse() {
 usage() {
 cat<<'GETOPTIONSHERE'
 Atlas is a CLI tool that has essentially one command: `atlas pull`
- 
-Atlas defaults to using a configuration file named `atlas.yml` placed
-in the root directory. Configuration file:
- 
-pull:
-  branch: <branch-name>
-  directory <directory-name>
-  repository: <organization-name>/<repository-name>
- 
-Atlas can also use a configuration file in a different path using the `--config` flag
-after `atlas`: `atlas pull --config config.yml`.
- 
-Atlas can also be used without a configuration file by using the flags below after
-`atlas pull`.
- 
-`-b` or `--branch`
-`-r` or `--repository`
-`-d` or `--directory`
+
+Configuration file:
+
+    Atlas defaults to using a configuration file named `atlas.yml` placed
+    in the root directory. Configuration file:
+
+    pull:
+      repository: <organization-name>/<repository-name>
+      branch: <branch-name>
+      directory: <repo-directory-name>:<local-dir-name> ...
+      filter: <pattern> ...
+
+    Atlas can also use a configuration file in a different path using the `--config` flag
+    after `atlas`: `atlas pull --config config.yml`.
+
+    Atlas can also be used without a configuration file by using the flags below after
+    `atlas pull`.
+
+Positional arguments DIRECTORY MAPPINGS ...
+
+   One or more directory map pair separated by a colon (:) e.g. FROM_DIR:TO_DIR.
+
+   The first directory (FROM_DIR) represents a directory in the git repository.
+   The second directory (TO_DIR) represents a local directory to copy files to.
+
+   At least one directory pair is required:
+
+     $ atlas pull frontend-app-learning/messages:learning-app frontend-lib-test/messages:test-lib
+
+   This syntax is inspired by `docker --volume from_dir:to_dir` mounting syntax.
+
+Options:
+
+    `-r` or `--repository`:
+        A repository GitHub repo slug defaults to 'openedx/openedx-translations'.
+
+    `-b` or `--branch`:
+        The git branch defaults to 'main'.
+
+    `-f` or `--filter`
+       A comma-separated (or space-separated) list of patterns match files and sub-directories.
+       This is mainly useful to filter specific languages to download.
+
+       The same filter is applied to all DIRECTORY MAPPINGS arguments.
+
+          --filter=fr_CA,ar,es_419 will match both directories named 'es_419' and files named 'es_419.json'
+                                   among others
+
+Example:
+
+    $ cd frontend-app-learning/src/i18n/messages
+    $ atlas pull --filter=fr_CA,ar,es_419 \
+            translations/frontend-app-learning/src/i18n/messages:frontend-app-learning \
+            translations/frontend-component-header/src/i18n/messages:frontend-component-header
+
+Will result in the following tree:
+
+    ├── frontend-app-learning
+    │   ├── ar.json
+    │   ├── es_419.json
+    │   └── fr_CA.json
+    └── frontend-component-header
+        ├── ar.json
+        ├── es_419.json
+        └── fr_CA.json
+
+More examples are available in the repository docs: https://github.com/openedx/openedx-translations .
+
 
 
 Commands:
