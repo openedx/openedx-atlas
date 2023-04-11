@@ -60,7 +60,9 @@ Running Automated Tests Locally
 
 **Run**
 
-``make test``
+  - ``make test``:  run all tests
+  - ``make performance_tests``:  run performance tests which pulls from GitHub.com/openedx
+  - ``make unit_tests``:  run fast unit tests without external dependency
 
 Documentation
 -------------

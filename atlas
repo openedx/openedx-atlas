@@ -301,10 +301,6 @@ pull_translations() {
     echo "Creating a temporary Git repository to pull translations into \"./translations_TEMP\"..."
   fi
 
-  # Create temp dir for translations
-  mkdir translations_TEMP
-  cd translations_TEMP || exit
-
   # use git in quiet mode when verbose isn't set
   if [ "$VERBOSE" ];
   then
@@ -313,17 +309,19 @@ pull_translations() {
     quiet="--quiet"
   fi
 
-  # Initialize git repo and add remote
-  git init $quiet -b main
-  remote_url="https://github.com/$pull_repository.git"
-  if [ "$quiet" ];
+  # use git in quiet mode when verbose isn't set
+  if [ "$pull_branch" ];
   then
-    # git remote doesn't support `--quiet`
-    # redirect git output to /dev/null if we aren't in verbose mode
-    git remote add -f origin "$remote_url" &> /dev/null
+    pull_branch_argument="--branch=${pull_branch}"
   else
-    git remote add -f origin "$remote_url"
+    pull_branch_argument=""
   fi
+
+  # Creating a shallow clone of the repo without without pulling the files yet
+  # shellcheck disable=SC2086
+  git clone $quiet $pull_branch_argument --filter=blob:none --no-checkout --depth=1 \
+            "https://github.com/${pull_repository}.git" translations_TEMP || exit
+  cd translations_TEMP || exit
 
   # finished "Creating a temporary Git repository to pull translations into <temp dir>..." step
   if [ -z "$SILENT" ];
@@ -336,7 +334,7 @@ pull_translations() {
   # Reset git sparse-checkout list of include/exclude files
   # Tells sparse checkout to ignore all files, except when otherwise noted
   # See https://www.git-scm.com/docs/git-sparse-checkout for detailed implementation
-  git sparse-checkout set "!*"
+  git sparse-checkout set --no-cone "!*"
 
   # Set sparse-checkout rules
   for directory_from_to in $pull_directory;
@@ -367,7 +365,7 @@ pull_translations() {
   fi
 
   # Retrieve translation files from the repo
-  git pull $quiet origin "$pull_branch"
+  git checkout HEAD
 
   # Remove .git directory
   rm -rf .git
