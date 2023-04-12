@@ -23,6 +23,10 @@ Describe 'Test default verbosity'
       %preserve GIT_CALLED_NOT_VERBOSELY
     }
 
+    directory_exists() {
+      true  # Mock directory checks so they're copied and `CP_CALLED` is set to true.
+    }
+
     cp() {
       CP_CALLED=true
       %preserve CP_CALLED
@@ -77,6 +81,10 @@ Describe 'Test silent flag'
         %preserve GIT_CALLED_QUIETLY
         %preserve GIT_CALLED_NOT_QUIETLY
       fi
+    }
+
+    directory_exists() {
+      true  # Mock directory checks so they're copied and `CP_CALLED` is set to true.
     }
 
     cp() {
@@ -151,6 +159,10 @@ Describe 'Test verbose flag'
       %preserve GIT_CALLED_NOT_QUIETLY
       %preserve GIT_CALLED_VERBOSELY
       %preserve GIT_CALLED_NOT_VERBOSELY
+    }
+
+    directory_exists() {
+      true  # Mock directory checks so they're copied and `CP_CALLED` is set to true.
     }
 
     cp() {

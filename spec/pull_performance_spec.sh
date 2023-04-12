@@ -38,11 +38,11 @@ Describe 'Pull performance on edX Platform Arabic translations'
 
   It 'calls everything properly'
     TEST_START_TIME=$(date +%s)  # Time the bash script
-    When run source $PREVIOUS_PWD/atlas pull -r openedx/edx-platform -b open-release/nutmeg.1 -f ar,fr conf/locale:messages
+    When run source $PREVIOUS_PWD/atlas pull -r openedx/edx-platform -b open-release/nutmeg.1 -f ar,fr conf/locale:messages non-existent-dir:no-files-here
     Assert check_call_time "Pull edX Platform" $TEST_START_TIME 10  # Allow a maximum of 10 seconds
 
     The output should equal 'Pulling translation files
- - directory: conf/locale:messages
+ - directory: conf/locale:messages non-existent-dir:no-files-here
  - repository: openedx/edx-platform
  - branch: open-release/nutmeg.1
  - filter: ar fr
@@ -54,6 +54,9 @@ Pulling translation files from the repository...
 Done.
 Copying translations from "./translations_TEMP/conf/locale" to "./messages"...
 /usr/bin/env cp -r ./translations_TEMP/conf/locale/ar ./translations_TEMP/conf/locale/fr messages/
+Done.
+Copying translations from "./translations_TEMP/non-existent-dir" to "./no-files-here"...
+Skipped copying "./translations_TEMP/non-existent-dir" because it was not found in the repository.
 Done.
 Removing temporary directory...
 Done.

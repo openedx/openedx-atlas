@@ -29,6 +29,15 @@ Describe 'Pull with directory param'
     echo "git $@"
   }
 
+  directory_exists() {
+    if [ "$1" = "./translations_TEMP/missing_pull_dir" ];
+    then
+      return 1 # Mock as if `missing_pull_dir` is not checkedout.
+    else
+      return 0 # Mock other directories to exists.
+    fi
+  }
+
   cp() {
     echo "cp $@"
   }
@@ -50,7 +59,12 @@ Describe 'Pull with directory param'
   }
 
 
-  setup() { pull_directory="pull_directory:local_dir pull_dir2:new/local_dir2" pull_repository="pull_repository" pull_branch="pull_branch"; VERBOSE=1; }
+  setup() {
+      pull_directory="pull_directory:local_dir pull_dir2:new/local_dir2 missing_pull_dir:local_dir3"
+      pull_repository="pull_repository"
+      pull_branch="pull_branch";
+      VERBOSE=1;
+  }
   BeforeEach 'setup'
 
   It 'calls everything properly with multiple directories'
@@ -63,6 +77,7 @@ Setting git sparse-checkout rules...
 git sparse-checkout set --no-cone !*
 git sparse-checkout add pull_directory/**
 git sparse-checkout add pull_dir2/**
+git sparse-checkout add missing_pull_dir/**
 Done.
 Pulling translation files from the repository...
 git checkout HEAD
@@ -76,6 +91,10 @@ mkdir -p new/local_dir2
 Done.
 Copying translations from "./translations_TEMP/pull_dir2" to "./new/local_dir2"...
 cp -r ./translations_TEMP/pull_dir2/* new/local_dir2/
+mkdir -p local_dir3
+Done.
+Copying translations from "./translations_TEMP/missing_pull_dir" to "./local_dir3"...
+Skipped copying "./translations_TEMP/missing_pull_dir" because it was not found in the repository.
 Done.
 Removing temporary directory...
 rm -rf translations_TEMP

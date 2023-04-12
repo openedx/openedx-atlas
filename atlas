@@ -278,6 +278,13 @@ contains_substring() {
   return $?
 }
 
+directory_exists() {
+  # Checks if directory ($1) exists
+  # This is mainly used to be mocked in tests
+  test -d "$1"
+  return $?
+}
+
 display_pull_params() {
   # Output configured vars to user
   echo "Pulling translation files"
@@ -395,7 +402,16 @@ pull_translations() {
       echo "Done."
       echo "Copying translations from \"${directory_from}\" to \"./${directory_to}\"..."
     fi
-    cp -r "${directory_from}"/* "${directory_to}"/ || exit 1
+
+    if directory_exists "$directory_from";
+    then
+      cp -r "${directory_from}"/* "${directory_to}"/ || exit 1
+    else
+      if [ -z "$SILENT" ];
+      then
+        echo "Skipped copying \"${directory_from}\" because it was not found in the repository."
+      fi
+    fi
   done
 
   # finished "Copying translations from <temp dir> to <dest dir>..." step
