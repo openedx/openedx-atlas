@@ -457,30 +457,35 @@ pull_translations() {
     echo "Setting git sparse-checkout rules..."
   fi
 
-  # Reset git sparse-checkout list of include/exclude files
-  # Tells sparse checkout to ignore all files, except when otherwise noted
-  # See https://www.git-scm.com/docs/git-sparse-checkout for detailed implementation
-  git sparse-checkout set --no-cone "!*"
+  git_sparse_checkout_rules="'!*'"
 
-  # Set sparse-checkout rules
   for directory_from_to in $pull_directory;
   do
     directory_from=$(echo "${directory_from_to}" | cut -f1 -d ':')
+    directory_to=$(echo "${directory_from_to}" | cut -f2 -d ':')
 
     if [ "$pull_filter" ];
     then
       for one_filter in $pull_filter;
       do
         # Include directories that matches the language pattern e.g. `/ar/`
-        git sparse-checkout add "$directory_from/**/${one_filter}/**"
+        git_sparse_checkout_rules="${git_sparse_checkout_rules} '${directory_from}/**/${one_filter}/**'"
         # Include files that matches the language pattern e.g. `ar.*`
-        git sparse-checkout add "$directory_from/**/${one_filter}.*"
+        git_sparse_checkout_rules="${git_sparse_checkout_rules} '${directory_from}/**/${one_filter}.*'"
       done
     else
       # Include all files within provided DIRECTORY if no filter is specified.
-      git sparse-checkout add "$directory_from/**"
+      git_sparse_checkout_rules="${git_sparse_checkout_rules} '${directory_from}/**'"
     fi
   done
+
+  # Set git sparse-checkout list of include/exclude files
+  # Tells sparse checkout to ignore all files, except when otherwise noted
+  # See https://www.git-scm.com/docs/git-sparse-checkout for detailed implementation
+  echo "git_sparse_checkout_rules: $git_sparse_checkout_rules"
+  git sparse-checkout init --no-cone
+  git sparse-checkout set --no-cone $git_sparse_checkout_rules
+  git sparse-checkout list
 
   # finished "Creating a temporary Git repository to pull translations into <temp dir>..." step
   if [ -z "$SILENT" ];
