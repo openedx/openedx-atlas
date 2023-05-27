@@ -1,6 +1,14 @@
 Describe 'Pull without directory mapping param'
   Include ./atlas
 
+  check_git_version() {
+    true  # skip the git version check
+  }
+
+  git_sparse_checkout_set() {
+    xargs echo "git sparse-checkout set"
+  }
+
   git() {
     echo "git $@"
   }
@@ -24,6 +32,14 @@ End
 
 Describe 'Pull with directory param'
   Include ./atlas
+
+  check_git_version() {
+    true  # skip the git version check
+  }
+
+  git_sparse_checkout_set() {
+    xargs echo "git sparse-checkout set"
+  }
 
   git() {
     echo "git $@"
@@ -74,10 +90,7 @@ git clone --branch=pull_branch --filter=blob:none --no-checkout --depth=1 https:
 cd translations_TEMP
 Done.
 Setting git sparse-checkout rules...
-git sparse-checkout set --no-cone !*
-git sparse-checkout add pull_directory/**
-git sparse-checkout add pull_dir2/**
-git sparse-checkout add missing_pull_dir/**
+git sparse-checkout set --no-cone !* pull_directory/** pull_dir2/** missing_pull_dir/**
 Done.
 Pulling translation files from the repository...
 git checkout HEAD
@@ -106,6 +119,14 @@ End
 
 Describe 'Pull filters'
   Include ./atlas
+
+  check_git_version() {
+    true  # skip the git version check
+  }
+
+  git_sparse_checkout_set() {
+    xargs echo "git sparse-checkout set"
+  }
 
   git() {
     echo "git $@"
@@ -138,13 +159,7 @@ Describe 'Pull filters'
     When call pull_translations
     The output should equal 'git clone --branch=pull_branch --filter=blob:none --no-checkout --depth=1 https://github.com/pull_repository.git translations_TEMP
 cd translations_TEMP
-git sparse-checkout set --no-cone !*
-git sparse-checkout add pull_directory/**/ar/**
-git sparse-checkout add pull_directory/**/ar.*
-git sparse-checkout add pull_directory/**/es_419/**
-git sparse-checkout add pull_directory/**/es_419.*
-git sparse-checkout add pull_directory/**/fr_CA/**
-git sparse-checkout add pull_directory/**/fr_CA.*
+git sparse-checkout set --no-cone !* pull_directory/**/ar/** pull_directory/**/ar.* pull_directory/**/es_419/** pull_directory/**/es_419.* pull_directory/**/fr_CA/** pull_directory/**/fr_CA.*
 git checkout HEAD
 cd ..'
   End

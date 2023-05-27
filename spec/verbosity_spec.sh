@@ -2,6 +2,14 @@ Describe 'Test default verbosity'
   # mock pull translations
   Intercept begin_pull_translations_mock
   __begin_pull_translations_mock__() {
+    check_git_version() {
+      true  # skip the git version check
+    }
+
+    git_sparse_checkout_set() {
+      true  # skip the sparse-checkout rules
+    }
+
     git() {
       if [ "$quiet" ];
       then
@@ -68,6 +76,14 @@ Describe 'Test silent flag'
   # mock pull translations
   Intercept begin_pull_translations_mock
   __begin_pull_translations_mock__() {
+    check_git_version() {
+      true  # skip the git version check
+    }
+
+    git_sparse_checkout_set() {
+      true  # skip the sparse-checkout rules
+    }
+
     git() {
       # Don't check `git sparse-checkout` for `--quiet` because it prints no output.
       if [ "$1" != "sparse-checkout" ];
@@ -140,6 +156,14 @@ Describe 'Test verbose flag'
   # mock pull translations
   Intercept begin_pull_translations_mock
   __begin_pull_translations_mock__() {
+    check_git_version() {
+      true  # skip the git version check
+    }
+
+    git_sparse_checkout_set() {
+      true  # skip the sparse-checkout rules
+    }
+
     git() {
       if [ "$quiet" ];
       then

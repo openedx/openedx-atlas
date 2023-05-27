@@ -14,10 +14,15 @@ gengetoptions: ## use getoptions to generate argument parsing
 # note: the CI uses the latest stable version available in brew: `brew tap shellspec/shellspec`, `brew install shellspec`
 
 unit_tests: ## automated testing using shellspec: fast unit tests without external dependency
-	shellspec $(shell find spec/ -type f ! -name pull_performance_spec.sh ! -name spec_helper.sh)
+	shellspec $(shell find spec/ -type f ! -name pull_performance_spec.sh ! -name spec_helper.sh ! -name integration_spec.sh)
 
 performance_tests:  ## automated testing using shellspec: performance integration tests pulling from GitHub.com/openedx
+        # This is a slow test that takes a minute or two to run and intended to measure performance
 	shellspec spec/pull_performance_spec.sh
+
+integration_tests: ## automated testing using shellspec: faster `git` integration tests with external dependency
+	# This test run in few seconds and intended to test `git` integration
+	shellspec spec/integration_spec.sh
 
 test: ## automated testing using shellspec: run all tests
 	shellspec

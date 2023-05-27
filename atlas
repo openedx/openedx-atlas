@@ -413,7 +413,33 @@ display_pull_params() {
   echo " - filter: ${pull_filter:-Not Specified}"
 }
 
+check_git_version() {
+  MINIMUM_GIT_VERSION="2.25.0"  # The `git sparse-checkout` subcommand was introduced in 2.25.0
+  GIT_VERSION=$(git --version | grep 'git version' | sed -e 's/git version //g')
+
+  # Check if GIT_VERSION is a valid version number
+  if ! echo "$GIT_VERSION" | grep -Eq '^[0-9]+(\.[0-9]+){1,3}$';
+  then
+    echo "Unable to determine git version. Please ensure git is installed and available on your PATH."
+    return 1
+  fi
+
+  if [ "$(printf '%s\n' "$MINIMUM_GIT_VERSION" "$GIT_VERSION" | sort --version-sort | head -n1)" != "$MINIMUM_GIT_VERSION" ];
+  then
+    echo "Git version ${GIT_VERSION} is not supported. Please upgrade to ${MINIMUM_GIT_VERSION} or higher."
+    return 1
+  fi
+}
+
+git_sparse_checkout_set() {
+    # Call `git sparse-checkout set --no-cone` with the list of include/exclude files as arguments
+    # as a replacement of `sparse-checkout add` that isn't available in git 2.25.0
+    xargs git sparse-checkout set
+}
+
 pull_translations() {
+  check_git_version || return 1
+
   if [ -z "$pull_directory" ];
   then
       echo "Missing positional argument:" >&2
@@ -457,30 +483,32 @@ pull_translations() {
     echo "Setting git sparse-checkout rules..."
   fi
 
-  # Reset git sparse-checkout list of include/exclude files
+  # Set git sparse-checkout list of include/exclude files
   # Tells sparse checkout to ignore all files, except when otherwise noted
   # See https://www.git-scm.com/docs/git-sparse-checkout for detailed implementation
-  git sparse-checkout set --no-cone "!*"
+  git_sparse_checkout_rules="'--no-cone' '!*'"
 
-  # Set sparse-checkout rules
   for directory_from_to in $pull_directory;
   do
     directory_from=$(echo "${directory_from_to}" | cut -f1 -d ':')
+    directory_to=$(echo "${directory_from_to}" | cut -f2 -d ':')
 
     if [ "$pull_filter" ];
     then
       for one_filter in $pull_filter;
       do
         # Include directories that matches the language pattern e.g. `/ar/`
-        git sparse-checkout add "$directory_from/**/${one_filter}/**"
+        git_sparse_checkout_rules="${git_sparse_checkout_rules} '${directory_from}/**/${one_filter}/**'"
         # Include files that matches the language pattern e.g. `ar.*`
-        git sparse-checkout add "$directory_from/**/${one_filter}.*"
+        git_sparse_checkout_rules="${git_sparse_checkout_rules} '${directory_from}/**/${one_filter}.*'"
       done
     else
       # Include all files within provided DIRECTORY if no filter is specified.
-      git sparse-checkout add "$directory_from/**"
+      git_sparse_checkout_rules="${git_sparse_checkout_rules} '${directory_from}/**'"
     fi
   done
+
+  echo "$git_sparse_checkout_rules" | git_sparse_checkout_set
 
   # finished "Creating a temporary Git repository to pull translations into <temp dir>..." step
   if [ -z "$SILENT" ];
