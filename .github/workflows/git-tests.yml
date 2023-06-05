@@ -1,0 +1,68 @@
+name: Git compatibility tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "**" ]
+
+
+jobs:
+  git-tests:
+    name: "${{ matrix.os }}-git-${{ matrix.git_version }}"
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 8
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            git_version: default
+
+          - os: ubuntu-20.04
+            git_version: default
+
+          - os: ubuntu-22.04
+            git_version: 2.40.1
+
+          - os: ubuntu-22.04
+            git_version: 2.30.2
+
+          - os: ubuntu-20.04
+            git_version: 2.25.1
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: install shellcheck
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y shellcheck
+    - name: Set up Homebrew
+      id: set-up-homebrew
+      uses: Homebrew/actions/setup-homebrew@master
+    - name: install shellspec
+      run: |
+        brew tap shellspec/shellspec
+        brew install shellspec
+    - name: install getoptions
+      run: |
+        brew tap ko1nksm/getoptions
+        brew install getoptions
+
+    - name: install custom version of git
+      run: |
+        sudo apt install gettext libcurl4-openssl-dev libexpat1-dev libz-dev libssl-dev
+        wget --no-verbose https://mirrors.edge.kernel.org/pub/software/scm/git/git-${{ matrix.git_version }}.tar.gz
+        tar -xzf git-${{ matrix.git_version }}.tar.gz
+        cd git-${{ matrix.git_version }}
+        make configure
+        ./configure --prefix=/usr/local
+        make all
+        sudo make install
+      if: matrix.git_version != 'default'
+
+    - name: print git version
+      run: git --version
+
+    - name: run integration tests
+      run: make integration_tests
