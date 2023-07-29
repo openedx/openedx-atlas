@@ -80,9 +80,11 @@ Releasing a New Version
 -----------------------
 This repository uses `semantic versioning <https://semver.org/>`_. To release a new version:
 
-* Cut a git tag with the new version number either via command-line e.g. ``git tag v1.0.0`` or the GitHub UI.
-* Wait for the ``release.yml`` GitHub Action to complete successfully, which uploads the latest ``atlas`` file to the release.
-* Edit the new release on GitHub to add release notes.
+* Create a GitHub release or a git tag via command line e.g. ``git tag v1.0.0``
+* Then, the ``release.yml`` GitHub Action will set the version number for ``atlas --version`` and creates a new release with ``atlas``.
+
+Note: The ``atlas --version`` command only outputs the version if it's downloaded from a GitHub release. Otherwise, it
+will output ``unreleased``.
 
 License
 -------

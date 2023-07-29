@@ -1,6 +1,6 @@
 name: Releases
 
-on: 
+on:
   push:
     tags:
     - '*'
@@ -12,6 +12,14 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
+    - name: set tag variable in atlas
+      run: |
+        # Sets _ATLAS_VERSION to the latest tag
+        CURRENT_TAG=$(git describe --exact-match --tags)
+        sed -i -e "s/_ATLAS_VERSION=.*/_ATLAS_VERSION=\"${CURRENT_TAG}\"  # Tagged by release.yml/" atlas
     - uses: ncipollo/release-action@v1
       with:
+        generateReleaseNotes: true  # GitHub generated notes are useful
+        allowUpdates: true  # GitHub UI makes hard to make a regular tag, therefore maintainers can create a release
+        artifactErrorsFailBuild: true  # Ensure that every release includes the `atlas` executable
         artifacts: "atlas"
