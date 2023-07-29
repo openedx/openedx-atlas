@@ -22,32 +22,39 @@ Installing Locally
 ------------------
 
 * Ensure ``git`` is installed and in your ``PATH``
-* Download ``atlas`` from the `latest release <https://github.com/openedx/openedx-atlas/releases/latest/>`_, or from the `main branch <https://github.com/openedx/openedx-atlas/blob/main/atlas>`_
+* Download ``atlas`` from the `latest release <https://github.com/openedx/openedx-atlas/releases/latest/>`_, or from the `main branch <https://github.com/openedx/openedx-atlas/blob/main/atlas>`_:
+
+.. code:: sh
+
+    curl -L https://github.com/openedx/openedx-atlas/releases/latest/download/atlas -o atlas
+
 * Allow execution ``chmod +x atlas``
 * Either add ``atlas`` to your ``PATH``, or run using ``./atlas``
 
 Usage
 -----
 
-Atlas is a CLI tool that has essentially one command: `atlas pull`
+Atlas is a CLI tool that has essentially one command: ``atlas pull``
 
-Atlas defaults to using a configuration file named `atlas.yml` placed
+Atlas defaults to using a configuration file named ``atlas.yml`` placed
 in the root directory. Configuration file:
 
-pull:
-  branch: <branch-name>
-  directory: <directory-name>
-  repository: <organization-name>/<repository-name>
+.. code:: yaml
 
-Atlas can also use a configuration file in a different path using the `--config` flag
-after `atlas`: `atlas pull --config config.yml`.
+    pull:
+      branch: <branch-name>
+      directory: <directory-name>
+      repository: <organization-name>/<repository-name>
+
+Atlas can also use a configuration file in a different path using the ``--config`` flag
+after ``atlas``: ``atlas pull --config config.yml``.
 
 Atlas can also be used without a configuration file by using the flags below after
-`atlas pull`.
+``atlas pull``.
 
-`-b` or `--branch`
-`-r` or `--repository`
-`-d` or `--directory`
+``-b`` or ``--branch``
+``-r`` or ``--repository``
+``-d`` or ``--directory``
 
 Running Automated Tests Locally
 -------------------------------
@@ -60,14 +67,22 @@ Running Automated Tests Locally
 
 **Run**
 
-  - ``make test``:  run all tests
-  - ``make performance_tests``:  run performance tests which pulls from GitHub.com/openedx
-  - ``make unit_tests``:  run fast unit tests without external dependency
+* ``make test``:  run all tests
+* ``make performance_tests``:  run performance tests which pulls from GitHub.com/openedx
+* ``make unit_tests``:  run fast unit tests without external dependency
 
 Documentation
 -------------
 
 TODO
+
+Releasing a New Version
+-----------------------
+This repository uses `semantic versioning <https://semver.org/>`_. To release a new version:
+
+* Cut a git tag with the new version number either via command-line e.g. ``git tag v1.0.0`` or the GitHub UI.
+* Wait for the ``release.yml`` GitHub Action to complete successfully, which uploads the latest ``atlas`` file to the release.
+* Edit the new release on GitHub to add release notes.
 
 License
 -------
