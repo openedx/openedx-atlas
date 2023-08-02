@@ -26,3 +26,6 @@ integration_tests: ## automated testing using shellspec: faster `git` integratio
 
 test: ## automated testing using shellspec: run all tests
 	shellspec
+
+atlas_help_to_readme: gengetoptions ## Updates the `atlas --help` section of the README.rst file
+	python3 scripts/atlas_help_to_readme.py

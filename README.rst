@@ -34,27 +34,84 @@ Installing Locally
 Usage
 -----
 
-Atlas is a CLI tool that has essentially one command: ``atlas pull``
+The help message below is copied from both ``atlas --help``. It's updated
+regularly and useful to understand ``atlas`` at a glance.
 
-Atlas defaults to using a configuration file named ``atlas.yml`` placed
-in the root directory. Configuration file:
+.. code::
 
-.. code:: yaml
+    Atlas is a CLI tool that has essentially one command: `atlas pull`
 
-    pull:
-      branch: <branch-name>
-      directory: <directory-name>
-      repository: <organization-name>/<repository-name>
+    Configuration file:
 
-Atlas can also use a configuration file in a different path using the ``--config`` flag
-after ``atlas``: ``atlas pull --config config.yml``.
+        Atlas defaults to using a configuration file named `atlas.yml` placed
+        in the root directory. Configuration file:
 
-Atlas can also be used without a configuration file by using the flags below after
-``atlas pull``.
+        pull:
+          repository: <organization-name>/<repository-name>
+          branch: <branch-name>
+          directory: <repo-directory-name>:<local-dir-name> ...
+          filter: <pattern> ...
 
-``-b`` or ``--branch``
-``-r`` or ``--repository``
-``-d`` or ``--directory``
+        Atlas can also use a configuration file in a different path using the `--config` flag
+        after `atlas`: `atlas pull --config config.yml`.
+
+        Atlas can also be used without a configuration file by using the flags below after
+        `atlas pull`.
+
+    Positional arguments DIRECTORY MAPPINGS ...
+
+       One or more directory map pair separated by a colon (:) e.g. FROM_DIR:TO_DIR.
+
+       The first directory (FROM_DIR) represents a directory in the git repository.
+       The second directory (TO_DIR) represents a local directory to copy files to.
+
+       At least one directory pair is required:
+
+         $ atlas pull frontend-app-learning/messages:learning-app frontend-lib-test/messages:test-lib
+
+       This syntax is inspired by the `docker --volume from_dir:to_dir` mounting syntax.
+
+    Options:
+
+        `-r` or `--repository`:
+            slug of the GitHub repository to pull from. Defaults 'openedx/openedx-translations'.
+
+        `-b` or `--branch`:
+            Branch to pull from. Defaults to 'main'
+
+        `-f` or `--filter`:
+           A comma-separated (or space-separated) list of patterns match files and sub-directories.
+           This is mainly useful to filter specific languages to download.
+
+           The same filter is applied to all DIRECTORY MAPPINGS arguments.
+
+           `--filter=fr_CA,ar,es_419` will match both directories named 'es_419' and
+           files named 'es_419.json' among others
+
+    Example:
+
+        $ cd frontend-app-learning/src/i18n/messages
+        $ atlas pull --filter=fr_CA,ar,es_419 \
+                translations/frontend-app-learning/src/i18n/messages:frontend-app-learning \
+                translations/frontend-component-header/src/i18n/messages:frontend-component-header
+
+        Will result in the following tree:
+
+          ├── frontend-app-learning
+          │   ├── ar.json
+          │   ├── es_419.json
+          │   └── fr_CA.json
+          └── frontend-component-header
+              ├── ar.json
+              ├── es_419.json
+              └── fr_CA.json
+
+
+
+    Commands:
+      pull      pull
+      -h, --help                  
+          --version               
 
 Running Automated Tests Locally
 -------------------------------
@@ -71,10 +128,25 @@ Running Automated Tests Locally
 * ``make performance_tests``:  run performance tests which pulls from GitHub.com/openedx
 * ``make unit_tests``:  run fast unit tests without external dependency
 
-Documentation
--------------
+Usage Examples
+--------------
 
-TODO
+There's a couple of patterns that are useful to imitate when using Atlas
+depending on the use case. ``atlas pull`` is most commonly implemented in
+``Makefile``, however it can be also used in ``Dockerfile`` builds or any
+other automation tool.
+
+Python Applications
+*******************
+
+TBD
+
+
+Micro-frontends
+***************
+
+TBD
+
 
 Releasing a New Version
 -----------------------

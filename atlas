@@ -38,24 +38,24 @@ Positional arguments DIRECTORY MAPPINGS ...
 
      $ atlas pull frontend-app-learning/messages:learning-app frontend-lib-test/messages:test-lib
 
-   This syntax is inspired by \`docker --volume from_dir:to_dir\` mounting syntax.
+   This syntax is inspired by the \`docker --volume from_dir:to_dir\` mounting syntax.
 
 Options:
 
     \`-r\` or \`--repository\`:
-        A repository GitHub repo slug defaults to 'openedx/openedx-translations'.
+        slug of the GitHub repository to pull from. Defaults 'openedx/openedx-translations'.
 
     \`-b\` or \`--branch\`:
-        The git branch defaults to 'main'.
+        Branch to pull from. Defaults to 'main'
 
-    \`-f\` or \`--filter\`
+    \`-f\` or \`--filter\`:
        A comma-separated (or space-separated) list of patterns match files and sub-directories.
        This is mainly useful to filter specific languages to download.
 
        The same filter is applied to all DIRECTORY MAPPINGS arguments.
 
-          --filter=fr_CA,ar,es_419 will match both directories named 'es_419' and files named 'es_419.json'
-                                   among others
+       \`--filter=fr_CA,ar,es_419\` will match both directories named 'es_419' and
+       files named 'es_419.json' among others
 
 Example:
 
@@ -64,18 +64,16 @@ Example:
             translations/frontend-app-learning/src/i18n/messages:frontend-app-learning \\
             translations/frontend-component-header/src/i18n/messages:frontend-component-header
 
-Will result in the following tree:
+    Will result in the following tree:
 
-    ├── frontend-app-learning
-    │   ├── ar.json
-    │   ├── es_419.json
-    │   └── fr_CA.json
-    └── frontend-component-header
-        ├── ar.json
-        ├── es_419.json
-        └── fr_CA.json
-
-More examples are available in the repository docs: https://github.com/openedx/openedx-translations .
+      ├── frontend-app-learning
+      │   ├── ar.json
+      │   ├── es_419.json
+      │   └── fr_CA.json
+      └── frontend-component-header
+          ├── ar.json
+          ├── es_419.json
+          └── fr_CA.json
 "
 
 	setup       REST help:usage -- "${_ATLAS_USAGE_HELP}" ''
@@ -185,24 +183,24 @@ Positional arguments DIRECTORY MAPPINGS ...
 
      $ atlas pull frontend-app-learning/messages:learning-app frontend-lib-test/messages:test-lib
 
-   This syntax is inspired by `docker --volume from_dir:to_dir` mounting syntax.
+   This syntax is inspired by the `docker --volume from_dir:to_dir` mounting syntax.
 
 Options:
 
     `-r` or `--repository`:
-        A repository GitHub repo slug defaults to 'openedx/openedx-translations'.
+        slug of the GitHub repository to pull from. Defaults 'openedx/openedx-translations'.
 
     `-b` or `--branch`:
-        The git branch defaults to 'main'.
+        Branch to pull from. Defaults to 'main'
 
-    `-f` or `--filter`
+    `-f` or `--filter`:
        A comma-separated (or space-separated) list of patterns match files and sub-directories.
        This is mainly useful to filter specific languages to download.
 
        The same filter is applied to all DIRECTORY MAPPINGS arguments.
 
-          --filter=fr_CA,ar,es_419 will match both directories named 'es_419' and files named 'es_419.json'
-                                   among others
+       `--filter=fr_CA,ar,es_419` will match both directories named 'es_419' and
+       files named 'es_419.json' among others
 
 Example:
 
@@ -211,18 +209,16 @@ Example:
             translations/frontend-app-learning/src/i18n/messages:frontend-app-learning \
             translations/frontend-component-header/src/i18n/messages:frontend-component-header
 
-Will result in the following tree:
+    Will result in the following tree:
 
-    ├── frontend-app-learning
-    │   ├── ar.json
-    │   ├── es_419.json
-    │   └── fr_CA.json
-    └── frontend-component-header
-        ├── ar.json
-        ├── es_419.json
-        └── fr_CA.json
-
-More examples are available in the repository docs: https://github.com/openedx/openedx-translations .
+      ├── frontend-app-learning
+      │   ├── ar.json
+      │   ├── es_419.json
+      │   └── fr_CA.json
+      └── frontend-component-header
+          ├── ar.json
+          ├── es_419.json
+          └── fr_CA.json
 
 
 
