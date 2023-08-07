@@ -78,10 +78,11 @@ TODO
 
 Releasing a New Version
 -----------------------
-This repository uses `semantic versioning <https://semver.org/>`_. To release a new version:
+This repository uses `semantic versioning <https://semver.org/>`_ with the aid of
+`semantic release <https://github.com/semantic-release/semantic-release/>`_ to automate the process.
 
-* Create a GitHub release or a git tag via command line e.g. ``git tag v1.0.0``
-* Then, the ``release.yml`` GitHub Action will set the version number for ``atlas --version`` and creates a new release with ``atlas``.
+To release a new version, use the `conventional commits <https://open-edx-proposals.readthedocs.io/en/latest/oep-0051-bp-conventional-commits.html>`_ and the ``release.yml`` GitHub action will
+automatically create a new release and upload the ``atlas`` executable.
 
 Note: The ``atlas --version`` command only outputs the version if it's downloaded from a GitHub release. Otherwise, it
 will output ``unreleased``.

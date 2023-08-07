@@ -1,25 +1,33 @@
-name: Releases
-
+name: Release CI
 on:
   push:
-    tags:
-    - '*'
+    branches:
+    - main
 
 jobs:
   release:
+    name: Release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-    - uses: actions/checkout@v3
-    - name: set tag variable in atlas
-      run: |
-        # Sets _ATLAS_VERSION to the latest tag
-        CURRENT_TAG=$(git describe --exact-match --tags)
-        sed -i -e "s/_ATLAS_VERSION=.*/_ATLAS_VERSION=\"${CURRENT_TAG}\"  # Tagged by release.yml/" atlas
-    - uses: ncipollo/release-action@v1
+    - name: Checkout
+      uses: actions/checkout@v3
       with:
-        generateReleaseNotes: true  # GitHub generated notes are useful
-        allowUpdates: true  # GitHub UI makes hard to make a regular tag, therefore maintainers can create a release
-        artifactErrorsFailBuild: true  # Ensure that every release includes the `atlas` executable
-        artifacts: "atlas"
+        fetch-depth: 0
+    - name: semantic release
+      env:
+        GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
+      run: |
+        # Run in dry-run mode to determine the next tag version and store it in semantic-release-next-version.txt
+        npx semantic-release@21.0.7 --dry-run | tee semantic-release-dry-run-output.txt
+        cat semantic-release-dry-run-output.txt \
+          | grep -o 'Skip v.* tag creation in dry-run mode' \
+          | sed -e 's/^Skip //' | sed -e 's/ tag creation in dry-run mode$//' \
+          | tee semantic-release-next-version.txt
+
+        echo "DEBUG: Next version is '$(cat semantic-release-next-version.txt)'"  # Debug version number
+
+        # Hardcode the next tag version in the atlas script
+        sed -i -e "s/_ATLAS_VERSION=.*/_ATLAS_VERSION=\"$(cat semantic-release-next-version.txt)\"  # Tagged by release.yml/" atlas
+
+        # Actually create the tag and upload the atlas script
+        npx semantic-release@21.0.7
