@@ -18,16 +18,25 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       run: |
         # Run in dry-run mode to determine the next tag version and store it in semantic-release-next-version.txt
-        npx semantic-release@21.0.7 --dry-run | tee semantic-release-dry-run-output.txt
-        cat semantic-release-dry-run-output.txt \
-          | grep -o 'Skip v.* tag creation in dry-run mode' \
-          | sed -e 's/^Skip //' | sed -e 's/ tag creation in dry-run mode$//' \
-          | tee semantic-release-next-version.txt
+        npx semantic-release@21.0.7 --dry-run | tee semantic-release-next-version.txt
 
-        echo "DEBUG: Next version is '$(cat semantic-release-next-version.txt)'"  # Debug version number
+        NEXT_VERSION=$(
+          cat semantic-release-next-version.txt | \
+            grep -o 'Skip v.* tag creation in dry-run mode' \
+            | sed -e 's/^Skip //' | sed -e 's/ tag creation in dry-run mode$//'
+        )
+
+        echo "DEBUG: Next version is '$NEXT_VERSION'"  # Debug version number
+
+        if [ -z "$NEXT_VERSION" ]; then
+          echo "ERROR: Could not determine next version from semantic-release dry-run output."
+          exit 1
+        fi
 
         # Hardcode the next tag version in the atlas script
-        sed -i -e "s/_ATLAS_VERSION=.*/_ATLAS_VERSION=\"$(cat semantic-release-next-version.txt)\"  # Tagged by release.yml/" atlas
+        sed -i -e "s/_ATLAS_VERSION=.*/_ATLAS_VERSION=\"$NEXT_VERSION\"  # Tagged by release.yml/" atlas
+
+        echo "DEBUG: 'atlas --version' output is '$(./atlas --version)'"  # Debug version number
 
         # Actually create the tag and upload the atlas script
         npx semantic-release@21.0.7
