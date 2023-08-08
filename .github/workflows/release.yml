@@ -15,7 +15,7 @@ jobs:
         fetch-depth: 0
     - name: semantic release
       env:
-        GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ github.token }}
       run: |
         # Run in dry-run mode to determine the next tag version and store it in semantic-release-next-version.txt
         npx semantic-release@21.0.7 --dry-run | tee semantic-release-dry-run-output.txt
