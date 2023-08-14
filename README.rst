@@ -129,8 +129,9 @@ regularly and useful to understand ``atlas`` at a glance.
 
     Commands:
       pull      pull
-      -h, --help                  
-          --version               
+      -h, --help
+          --version
+
 
 Running Automated Tests Locally
 -------------------------------
