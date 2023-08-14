@@ -18,10 +18,29 @@ cloning a repository with translation files kept in openedx-translations. For in
 when building a docker image or testing localization strings locally. It should not be
 necessary to run any application in English.
 
-Installing Locally
-------------------
+Installation
+------------
 
-* Ensure ``git`` is installed and in your ``PATH``
+Atlas itself is a bash script, but it can be installed in a couple of
+different ways:
+
+First, ensure ``git`` is installed and available in ``PATH`` because atlas
+relies on it.
+
+**Install as an ``npm`` package**
+
+Install from npm:
+
+.. code:: sh
+
+    npm install @edx/openedx-atlas
+
+Then add ``node_modules/.bin`` to your ``PATH``.
+
+Verify that is installed via ``atlas --help``.
+
+**Install directly from GitHub releases**
+
 * Download ``atlas`` from the `latest release <https://github.com/openedx/openedx-atlas/releases/latest/>`_, or from the `main branch <https://github.com/openedx/openedx-atlas/blob/main/atlas>`_:
 
 .. code:: sh
