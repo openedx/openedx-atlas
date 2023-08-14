@@ -6,6 +6,9 @@
     "type": "git",
     "url": "git+https://github.com/openedx/openedx-atlas.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "atlas": "./atlas"
   },
