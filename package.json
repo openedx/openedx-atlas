@@ -1,0 +1,14 @@
+{
+  "name": "@edx/openedx-atlas",
+  "version": "1.0.0-semantically-released",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openedx/openedx-atlas.git"
+  },
+  "bin": {
+    "atlas": "./atlas"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
