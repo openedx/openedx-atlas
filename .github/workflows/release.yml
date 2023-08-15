@@ -71,7 +71,7 @@ jobs:
       if: env.NEXT_VERSION
       run: |
         NEXT_VERSION_PYPI=${NEXT_VERSION:1}  # Remove the leading 'v' to match PyPi's versioning scheme
-        sed -i -e "s/version=.*,/version='$NEXT_VERSION_PYPI'  # tagged by release.yml,/" setup.py
+        sed -i -e "s/version=.*,/version='$NEXT_VERSION_PYPI',  # tagged by release.yml/" setup.py
         cat setup.py  # Debug setup.py output
 
     - name: Build package
