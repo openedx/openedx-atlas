@@ -67,15 +67,20 @@ jobs:
     - name: Install Dependencies
       run: pip install setuptools wheel
 
-    - name: Build package
-      run: python setup.py sdist bdist_wheel
-
     - name: Update the tag version in setup.py
       if: env.NEXT_VERSION
       run: |
         NEXT_VERSION_PYPI=${NEXT_VERSION:1}  # Remove the leading 'v' to match PyPi's versioning scheme
         sed -i -e "s/version=.*,/version='$NEXT_VERSION_PYPI'  # tagged by release.yml,/" setup.py
-        cat setup.py
+        cat setup.py  # Debug setup.py output
+
+    - name: Build package
+      run: python setup.py sdist bdist_wheel
+
+    - name: Print built package version
+      run: |
+        echo "DEBUG: checking the version within the pip wheel .whl file"
+        less dist/*.whl | head -n 20
 
     - name: Publish to PyPi
       if: env.NEXT_VERSION
