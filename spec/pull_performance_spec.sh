@@ -46,6 +46,7 @@ Describe 'Pull performance on edX Platform Arabic translations'
  - repository: openedx/edx-platform
  - branch: open-release/nutmeg.1
  - filter: ar fr
+ - expand-glob: Not Specified
 Creating a temporary Git repository to pull translations into "./translations_TEMP"...
 Done.
 Setting git sparse-checkout rules...

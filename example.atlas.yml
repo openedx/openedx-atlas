@@ -3,3 +3,4 @@ pull:
   directory: example_directory
   repository: example_repository
   filter: example_filter
+  expand_glob: 1
