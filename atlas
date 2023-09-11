@@ -20,6 +20,7 @@ Configuration file:
       branch: <branch-name>
       directory: <repo-directory-name>:<local-dir-name> ...
       filter: <pattern> ...
+      expand_glob: 0
 
     Atlas can also use a configuration file in a different path using the \`--config\` flag
     after \`atlas\`: \`atlas pull --config config.yml\`.
@@ -57,6 +58,10 @@ Options:
        \`--filter=fr_CA,ar,es_419\` will match both directories named 'es_419' and
        files named 'es_419.json' among others
 
+   \`-g\` or \`--expand-glob\`:
+       Expand glob pattern e.g. 'atlas pull translations/*/done' to 'atlas pull translations/DoneXBlock/done'
+       if it exists.
+
 Example:
 
     $ cd frontend-app-learning/src/i18n/messages
@@ -87,12 +92,13 @@ parser_definition_pull() {
 	setup   PULL_REST help:usage_pull -- \
 		"Usage: atlas pull [options...] [directory mappings...]"
 	msg -- 'Options:'
-	param		CONFIG			--config			-- "path to alternative atlas.yaml configuration file"
-	param		BRANCH		-b	--branch			-- "A branch of translation files"
-	param		REPOSITORY	-r	--repository		-- "The repository containing translation files"
-	param		FILTER	    -f	--filter			-- "List of patterns to select which files and sub-directories to checkout."
-	flag		VERBOSE		-v	--verbose			-- "verbose output to terminal"
-	flag		SILENT		-s	--silent			-- "no output to terminal"
+	param		CONFIG			--config			    -- "path to alternative atlas.yaml configuration file"
+	param		BRANCH		    -b	--branch			-- "A branch of translation files"
+	param		REPOSITORY	    -r	--repository		-- "The repository containing translation files"
+	param		FILTER	        -f	--filter			-- "List of patterns to select which files and sub-directories to checkout."
+	flag		EXPAND_GLOB     -g	--expand-glob       -- "Expand glob pattern e.g. 'atlas pull translations/*/done' to 'atlas pull translations/DoneXBlock/done' if it exists."
+	flag		VERBOSE		    -v	--verbose			-- "verbose output to terminal"
+	flag		SILENT		    -s	--silent			-- "no output to terminal"
 	disp    :usage_pull  -h --help
 }
 # @end
@@ -165,6 +171,7 @@ Configuration file:
       branch: <branch-name>
       directory: <repo-directory-name>:<local-dir-name> ...
       filter: <pattern> ...
+      expand_glob: 0
 
     Atlas can also use a configuration file in a different path using the `--config` flag
     after `atlas`: `atlas pull --config config.yml`.
@@ -202,6 +209,10 @@ Options:
        `--filter=fr_CA,ar,es_419` will match both directories named 'es_419' and
        files named 'es_419.json' among others
 
+   `-g` or `--expand-glob`:
+       Expand glob pattern e.g. 'atlas pull translations/*/done' to 'atlas pull translations/DoneXBlock/done'
+       if it exists.
+
 Example:
 
     $ cd frontend-app-learning/src/i18n/messages
@@ -238,6 +249,7 @@ CONFIG=''
 BRANCH=''
 REPOSITORY=''
 FILTER=''
+EXPAND_GLOB=''
 VERBOSE=''
 SILENT=''
 PULL_REST=''
@@ -252,7 +264,7 @@ parse_pull() {
       -[brf]?*) OPTARG=$1; shift
         eval 'set -- "${OPTARG%"${OPTARG#??}"}" "${OPTARG#??}"' ${1+'"$@"'}
         ;;
-      -[vsh]?*) OPTARG=$1; shift
+      -[gvsh]?*) OPTARG=$1; shift
         eval 'set -- "${OPTARG%"${OPTARG#??}"}" -"${OPTARG#??}"' ${1+'"$@"'}
         OPTARG= ;;
     esac
@@ -277,6 +289,11 @@ parse_pull() {
         OPTARG=$2
         FILTER="$OPTARG"
         shift ;;
+      '-g'|'--expand-glob')
+        [ "${OPTARG:-}" ] && OPTARG=${OPTARG#*\=} && set "noarg" "$1" && break
+        eval '[ ${OPTARG+x} ] &&:' && OPTARG='1' || OPTARG=''
+        EXPAND_GLOB="$OPTARG"
+        ;;
       '-v'|'--verbose')
         [ "${OPTARG:-}" ] && OPTARG=${OPTARG#*\=} && set "noarg" "$1" && break
         eval '[ ${OPTARG+x} ] &&:' && OPTARG='1' || OPTARG=''
@@ -323,6 +340,7 @@ Options:
   -b, --branch BRANCH         A branch of translation files
   -r, --repository REPOSITORY The repository containing translation files
   -f, --filter FILTER         List of patterns to select which files and sub-directories to checkout.
+  -g, --expand-glob           Expand glob pattern e.g. 'atlas pull translations/*/done' to 'atlas pull translations/DoneXBlock/done' if it exists.
   -v, --verbose               verbose output to terminal
   -s, --silent                no output to terminal
   -h, --help                  
@@ -368,6 +386,7 @@ set_pull_params() {
       pull_repository="openedx/openedx-translations"
       pull_branch="main"
       pull_filter=""
+      pull_expand_glob=""
     fi
   fi
 
@@ -394,6 +413,12 @@ set_pull_params() {
   fi
 
   pull_filter="$(echo "$pull_filter" | tr ',' ' ')"  # Accept comma and/or space separated directories list
+
+
+  if [ "$EXPAND_GLOB" ];
+  then
+      pull_expand_glob="$EXPAND_GLOB"
+  fi
 }
 
 contains_substring() {
@@ -416,6 +441,7 @@ display_pull_params() {
   echo " - repository: ${pull_repository:-Not Specified}"
   echo " - branch: ${pull_branch:-Not Specified}"
   echo " - filter: ${pull_filter:-Not Specified}"
+  echo " - expand-glob: ${pull_expand_glob:-Not Specified}"
 }
 
 check_git_version() {
@@ -440,6 +466,16 @@ git_sparse_checkout_set() {
     # Call `git sparse-checkout set --no-cone` with the list of include/exclude files as arguments
     # as a replacement of `sparse-checkout add` that isn't available in git 2.25.0
     xargs git sparse-checkout set
+}
+
+expand_glob_pattern() {
+    # Expands glob pattern.
+    # An alternative to `compgen -G` that isn't available in non-Bash shells.
+    # Call: `expand_glob_pattern "translations/*/done"` to expand to `translations/DoneXBlock/done` if the file exists.
+
+    # Shellcheck rule is disabled because we _want_ to expand the glob pattern.
+    # shellcheck disable=SC2086
+    echo $1;
 }
 
 pull_translations() {
@@ -539,6 +575,12 @@ pull_translations() {
   do
     directory_from="$(echo "${directory_from_to}" | cut -f1 -d ':')"
     directory_from="./translations_TEMP/${directory_from}"
+
+    if [ -n "$pull_expand_glob" ];
+    then
+      # Expand glob pattern e.g. `./translations_TEMP/*/done` to `./translations_TEMP/DoneXBlock/done`
+      directory_from="$(expand_glob_pattern "$directory_from")"
+    fi
 
     # If no colon is provided then directory_to=. (aka working directory)
     if contains_substring "$directory_from_to" ":";

@@ -70,6 +70,7 @@ regularly and useful to understand ``atlas`` at a glance.
           branch: <branch-name>
           directory: <repo-directory-name>:<local-dir-name> ...
           filter: <pattern> ...
+          expand_glob: 0
 
         Atlas can also use a configuration file in a different path using the `--config` flag
         after `atlas`: `atlas pull --config config.yml`.
@@ -106,6 +107,10 @@ regularly and useful to understand ``atlas`` at a glance.
 
            `--filter=fr_CA,ar,es_419` will match both directories named 'es_419' and
            files named 'es_419.json' among others
+
+       `-g` or `--expand-glob`:
+           Expand glob pattern e.g. 'atlas pull translations/*/done' to 'atlas pull translations/DoneXBlock/done'
+           if it exists.
 
     Example:
 
