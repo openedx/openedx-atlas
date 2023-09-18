@@ -1,5 +1,5 @@
-Establishing a Repository for Translations Management
-#####################################################
+Support Glob Patterns in ``atlas pull``
+#######################################
 
 Description
 ***********
