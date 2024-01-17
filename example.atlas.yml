@@ -1,5 +1,5 @@
 pull:
-  branch: example_branch
+  revision: example_branch
   directory: example_directory
   repository: example_repository
   filter: example_filter

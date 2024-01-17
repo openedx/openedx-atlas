@@ -67,7 +67,7 @@ regularly and useful to understand ``atlas`` at a glance.
 
         pull:
           repository: <organization-name>/<repository-name>
-          branch: <branch-name>
+          revision: <git-revision>
           directory: <repo-directory-name>:<local-dir-name> ...
           filter: <pattern> ...
           expand_glob: 0
@@ -96,8 +96,10 @@ regularly and useful to understand ``atlas`` at a glance.
         `-r` or `--repository`:
             slug of the GitHub repository to pull from. Defaults 'openedx/openedx-translations'.
 
-        `-b` or `--branch`:
-            Branch to pull from. Defaults to 'main'
+        `-n` or `--revision`:
+            Git revision to pull from. Currently only branches and tags are supported. Defaults to 'main'.
+
+            This option name used to be `-b` or `--branch`. The deprecated name will be removed in a future release.
 
         `-f` or `--filter`:
            A comma-separated (or space-separated) list of patterns match files and sub-directories.

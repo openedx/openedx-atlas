@@ -40,13 +40,13 @@ Describe 'Pull performance on edX Platform Arabic translations'
 
   It 'calls everything properly'
     TEST_START_TIME=$(date +%s)  # Time the bash script
-    When run source $PREVIOUS_PWD/atlas pull -r openedx/xblock-drag-and-drop-v2 -b v3.2.0 -f ar,fr drag_and_drop_v2:drag_and_drop_v2 non-existent-dir:no-files-here
+    When run source $PREVIOUS_PWD/atlas pull -r openedx/xblock-drag-and-drop-v2 -n v3.2.0 -f ar,fr drag_and_drop_v2:drag_and_drop_v2 non-existent-dir:no-files-here
     Assert check_call_time "Pull xblock-drag-and-drop-v2" $TEST_START_TIME 60  # Allow a maximum of 60 seconds
 
     The output should equal 'Pulling translation files
  - directory: drag_and_drop_v2:drag_and_drop_v2 non-existent-dir:no-files-here
  - repository: openedx/xblock-drag-and-drop-v2
- - branch: v3.2.0
+ - revision: v3.2.0
  - filter: ar fr
  - expand-glob: Not Specified
 Creating a temporary Git repository to pull translations into "./translations_TEMP"...
@@ -100,13 +100,13 @@ Describe 'Bash glob patterns'
 
   It 'pulls with glob patterns'
     TEST_START_TIME=$(date +%s)  # Time the bash script
-    When run source $PREVIOUS_PWD/atlas pull -r openedx/xblock-drag-and-drop-v2 -b v3.2.0 --expand-glob -f ar 'drag_and_drop_v2/*/locale:drag_and_drop_v2'
+    When run source $PREVIOUS_PWD/atlas pull -r openedx/xblock-drag-and-drop-v2 -n v3.2.0 --expand-glob -f ar 'drag_and_drop_v2/*/locale:drag_and_drop_v2'
     Assert check_call_time "Pull xblock-drag-and-drop-v2" $TEST_START_TIME 60  # Allow a maximum of 60 seconds
 
     The output should equal 'Pulling translation files
  - directory: drag_and_drop_v2/*/locale:drag_and_drop_v2
  - repository: openedx/xblock-drag-and-drop-v2
- - branch: v3.2.0
+ - revision: v3.2.0
  - filter: ar
  - expand-glob: 1
 Creating a temporary Git repository to pull translations into "./translations_TEMP"...

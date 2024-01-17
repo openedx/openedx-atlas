@@ -17,7 +17,7 @@ Describe 'Pull without directory mapping param'
     echo "cp $@"
   }
 
-  setup() { pull_repository="pull_repository" pull_branch="pull_branch"; VERBOSE=1; }
+  setup() { pull_repository="pull_repository" pull_revision="pull_revision"; VERBOSE=1; }
   BeforeEach 'setup'
 
   It 'Fails and require a directory mapping positional parameter'
@@ -78,7 +78,7 @@ Describe 'Pull with directory param'
   setup() {
       pull_directory="pull_directory:local_dir pull_dir2:new/local_dir2 missing_pull_dir:local_dir3"
       pull_repository="pull_repository"
-      pull_branch="pull_branch";
+      pull_revision="pull_revision";
       VERBOSE=1;
   }
   BeforeEach 'setup'
@@ -86,7 +86,7 @@ Describe 'Pull with directory param'
   It 'calls everything properly with multiple directories'
     When call pull_translations
     The output should equal 'Creating a temporary Git repository to pull translations into "./translations_TEMP"...
-git clone --branch=pull_branch --filter=blob:none --no-checkout --depth=1 https://github.com/pull_repository.git translations_TEMP
+git clone --branch=pull_revision --filter=blob:none --no-checkout --depth=1 https://github.com/pull_repository.git translations_TEMP
 cd translations_TEMP
 Done.
 Setting git sparse-checkout rules...
@@ -148,7 +148,7 @@ Describe 'Pull filters'
   setup() {
       pull_directory="pull_directory"
       pull_repository="pull_repository"
-      pull_branch="pull_branch"
+      pull_revision="pull_revision"
       pull_filter="ar es_419 fr_CA"
       VERBOSE=0
       SILENT=1
@@ -157,7 +157,7 @@ Describe 'Pull filters'
 
   It 'sets correct sparse-checkout rules'
     When call pull_translations
-    The output should equal 'git clone --branch=pull_branch --filter=blob:none --no-checkout --depth=1 https://github.com/pull_repository.git translations_TEMP
+    The output should equal 'git clone --branch=pull_revision --filter=blob:none --no-checkout --depth=1 https://github.com/pull_repository.git translations_TEMP
 cd translations_TEMP
 git sparse-checkout set --no-cone !* pull_directory/**/ar/** pull_directory/**/ar.* pull_directory/**/es_419/** pull_directory/**/es_419.* pull_directory/**/fr_CA/** pull_directory/**/fr_CA.*
 git checkout HEAD

@@ -38,13 +38,13 @@ Describe 'Pull performance on edX Platform Arabic translations'
 
   It 'calls everything properly'
     TEST_START_TIME=$(date +%s)  # Time the bash script
-    When run source $PREVIOUS_PWD/atlas pull -r openedx/edx-platform -b open-release/nutmeg.1 -f ar,fr conf/locale:messages non-existent-dir:no-files-here
+    When run source $PREVIOUS_PWD/atlas pull -r openedx/edx-platform -n open-release/nutmeg.1 -f ar,fr conf/locale:messages non-existent-dir:no-files-here
     Assert check_call_time "Pull edX Platform" $TEST_START_TIME 10  # Allow a maximum of 10 seconds
 
     The output should equal 'Pulling translation files
  - directory: conf/locale:messages non-existent-dir:no-files-here
  - repository: openedx/edx-platform
- - branch: open-release/nutmeg.1
+ - revision: open-release/nutmeg.1
  - filter: ar fr
  - expand-glob: Not Specified
 Creating a temporary Git repository to pull translations into "./translations_TEMP"...
