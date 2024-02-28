@@ -21,15 +21,26 @@ necessary to run any application in English.
 Installation
 ------------
 
-Atlas itself is a bash script, but it can be installed in a couple of
-different ways:
+Atlas itself is a bash script. It is recommended to install it as a package
+to avoid unintentionally installing breaking changes,
+while also simplifying the updating process.
 
-First, ensure ``git`` is installed and available in ``PATH`` because atlas
-relies on it.
+Atlas prerequisites are ``git>=2.20.1`` and ``bash``.
+
+**Install as a ``pip`` package**
+
+Install from `PyPI <https://pypi.org/project/openedx-atlas/>`_
+
+.. code:: sh
+
+    pip install openedx-atlas  # or add the package to your requirements.txt
+
+Verify that it is installed via ``atlas --help``.
+
 
 **Install as an ``npm`` package**
 
-Install from npm:
+Install from `npm <https://www.npmjs.com/package/@edx/openedx-atlas>`_.
 
 .. code:: sh
 
@@ -37,18 +48,23 @@ Install from npm:
 
 Then add ``node_modules/.bin`` to your ``PATH``.
 
-Verify that is installed via ``atlas --help``.
+Verify that it is installed via ``atlas --help``.
 
-**Install directly from GitHub releases**
 
-* Download ``atlas`` from the `latest release <https://github.com/openedx/openedx-atlas/releases/latest/>`_, or from the `main branch <https://github.com/openedx/openedx-atlas/blob/main/atlas>`_:
+**Install manually from GitHub releases**
+
+This is considered a last resort because of the manual burden of updating
+the ``atlas`` executable version or risking introducing breaking
+changes to your code.
+
+* Download ``atlas`` from the `latest release <https://github.com/openedx/openedx-atlas/releases/latest/>`_ or from the `main branch <https://github.com/openedx/openedx-atlas/blob/main/atlas>`_:
 
 .. code:: sh
 
     curl -L https://github.com/openedx/openedx-atlas/releases/latest/download/atlas -o atlas
 
-* Allow execution ``chmod +x atlas``
-* Either add ``atlas`` to your ``PATH``, or run using ``./atlas``
+* Allow execution with ``chmod +x atlas``
+* Either add ``atlas`` to your ``PATH`` or run it using ``./atlas``
 
 Usage
 -----
