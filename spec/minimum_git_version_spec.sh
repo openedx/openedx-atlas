@@ -28,6 +28,35 @@ Describe 'Works on version 2.25.0'
 End
 
 
+Describe 'Works on Apple git 2.39.3 / Apple Git-146'
+  git() {
+    echo 'git version 2.39.3 (Apple Git-146)'
+  }
+
+  Include ./atlas
+
+  It 'Works'
+    When call check_git_version
+    The status should be success
+  End
+End
+
+
+Describe 'Fails on Apple git 2.19.3 / Apple Git-50'
+  git() {
+    echo 'git version 2.19.3 (Apple Git-50)'
+  }
+
+  Include ./atlas
+
+  It 'Detect the version correctly and fails'
+    When call check_git_version
+    The output should equal 'Git version 2.19.3 is not supported. Please upgrade to 2.25.0 or higher.'
+    The status should be failure
+  End
+End
+
+
 Describe 'Require git version 2.25.0 at least'
   git() {
     echo "git version 2.20.1"

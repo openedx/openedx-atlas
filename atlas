@@ -451,7 +451,7 @@ display_pull_params() {
 
 check_git_version() {
   MINIMUM_GIT_VERSION="2.25.0"  # The `git sparse-checkout` subcommand was introduced in 2.25.0
-  GIT_VERSION=$(git --version | grep 'git version' | sed -e 's/git version //g')
+  GIT_VERSION=$(git --version | grep 'git version' | sed -e 's/ .Apple Git-.*//gI' | sed -e 's/git version //g')
 
   # Check if GIT_VERSION is a valid version number
   if ! echo "$GIT_VERSION" | grep -Eq '^[0-9]+(\.[0-9]+){1,3}$';
