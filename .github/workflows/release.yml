@@ -84,7 +84,7 @@ jobs:
 
     - name: Publish to PyPi
       if: env.NEXT_VERSION
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
         password: ${{ secrets.PYPI_UPLOAD_TOKEN }}
