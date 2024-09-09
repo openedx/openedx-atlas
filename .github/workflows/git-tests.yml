@@ -18,7 +18,7 @@ jobs:
           - os: ubuntu-22.04
             git_version: default
 
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             git_version: default
 
           - os: ubuntu-22.04
@@ -27,7 +27,7 @@ jobs:
           - os: ubuntu-22.04
             git_version: 2.30.2
 
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             git_version: 2.25.1
 
     steps:
