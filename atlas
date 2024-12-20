@@ -47,7 +47,7 @@ Options:
         slug of the GitHub repository to pull from. Defaults 'openedx/openedx-translations'.
 
     \`-n\` or \`--revision\`:
-        Git revision to pull from. Currently only branches and tags are supported. Defaults to 'main'.
+        Git revision to pull from. Support branches, tags, and commits hashes. Defaults to 'main'.
 
         This option name used to be \`-b\` or \`--branch\`. The deprecated name will be removed in a future release.
 
@@ -200,7 +200,7 @@ Options:
         slug of the GitHub repository to pull from. Defaults 'openedx/openedx-translations'.
 
     `-n` or `--revision`:
-        Git revision to pull from. Currently only branches and tags are supported. Defaults to 'main'.
+        Git revision to pull from. Support branches, tags, and commits hashes. Defaults to 'main'.
 
         This option name used to be `-b` or `--branch`. The deprecated name will be removed in a future release.
 
@@ -507,18 +507,21 @@ pull_translations() {
     quiet="--quiet"
   fi
 
-  if [ "$pull_revision" ];
-  then
-    pull_revision_argument="--branch=${pull_revision}"
-  else
-    pull_revision_argument=""
-  fi
 
   # Creating a shallow clone of the repo without without pulling the files yet
-  # shellcheck disable=SC2086
-  git clone $quiet $pull_revision_argument --filter=blob:none --no-checkout --depth=1 \
-            "https://github.com/${pull_repository}.git" translations_TEMP || exit
+  git init $quiet translations_TEMP || exit
   cd translations_TEMP || exit
+  git remote add origin "https://github.com/${pull_repository}.git" || exit
+  # Requires server to allow pulling commits by direct commit hash reference,
+  # controlled by uploadpack.allowAnySHA1InWant and related configs. (GitHub
+  # does allow this, though.)
+  #
+  # The `remote.<name>.promisor` config override is needed for git 2.25 and possibly
+  # later versions (but not in 2.30 and later). In some earlier versions it might
+  # instead need to be written as `extensions.partialClone=origin` -- 2.25.1 mentions
+  # this in its output if a promisor is not set, but doesn't actually *use* that config.
+  git -c remote.origin.promisor=true fetch \
+      $quiet --filter=blob:none --depth=1 origin "${pull_revision:-main}" || exit
 
   # finished "Creating a temporary Git repository to pull translations into <temp dir>..." step
   if [ -z "$SILENT" ];
@@ -564,7 +567,7 @@ pull_translations() {
   fi
 
   # Retrieve translation files from the repo
-  git checkout HEAD
+  git checkout $quiet FETCH_HEAD
 
   # Remove .git directory
   rm -rf .git

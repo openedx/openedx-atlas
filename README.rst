@@ -113,7 +113,7 @@ regularly and useful to understand ``atlas`` at a glance.
             slug of the GitHub repository to pull from. Defaults 'openedx/openedx-translations'.
 
         `-n` or `--revision`:
-            Git revision to pull from. Currently only branches and tags are supported. Defaults to 'main'.
+            Git revision to pull from. Support branches, tags, and commits hashes. Defaults to 'main'.
 
             This option name used to be `-b` or `--branch`. The deprecated name will be removed in a future release.
 
