@@ -569,6 +569,12 @@ pull_translations() {
   # Retrieve translation files from the repo
   git checkout $quiet FETCH_HEAD
 
+  # Prints the disk usage of the whole pulled directory
+  if [ "$VERBOSE" ]; then
+    # Minor note: the size are essentially rounded up to the next 512-byte value. See: https://superuser.com/a/402000
+    echo "Size of pulled data on-disk (bytes): $(du -s . | grep -o '[0-9]*')"
+  fi
+
   # Remove .git directory
   rm -rf .git
 
