@@ -473,6 +473,12 @@ git_sparse_checkout_set() {
     xargs git sparse-checkout set
 }
 
+git_disk_usage() {
+  # Print the disk usage of the whole git "atlas pull" directory
+  # Minor note: the size are essentially rounded up to the next 512-byte value. See: https://superuser.com/a/402000
+  du -s . | grep -o '[0-9]*'
+}
+
 expand_glob_pattern() {
     # Expands glob pattern.
     # An alternative to `compgen -G` that isn't available in non-Bash shells.
@@ -569,10 +575,10 @@ pull_translations() {
   # Retrieve translation files from the repo
   git checkout $quiet FETCH_HEAD
 
-  # Prints the disk usage of the whole pulled directory
+  disk_usage="$(git_disk_usage)"
+
   if [ "$VERBOSE" ]; then
-    # Minor note: the size are essentially rounded up to the next 512-byte value. See: https://superuser.com/a/402000
-    echo "Size of pulled data on-disk (bytes): $(du -s . | grep -o '[0-9]*')"
+    echo "Size of pulled data on-disk (bytes): ${disk_usage}"
   fi
 
   # Remove .git directory

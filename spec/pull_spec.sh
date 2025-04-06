@@ -74,6 +74,10 @@ Describe 'Pull with directory param'
     echo "cd $@"
   }
 
+  git_disk_usage() {
+    # Hardcode output of `du` to ensure non-flaky tests
+    echo 5308
+  }
 
   setup() {
       pull_directory="pull_directory:local_dir pull_dir2:new/local_dir2 missing_pull_dir:local_dir3"
@@ -96,6 +100,7 @@ git sparse-checkout set --no-cone !* pull_directory/** pull_dir2/** missing_pull
 Done.
 Pulling translation files from the repository...
 git checkout FETCH_HEAD
+Size of pulled data on-disk (bytes): 5308
 rm -rf .git
 cd ..
 mkdir -p local_dir
@@ -147,6 +152,11 @@ Describe 'Pull filters'
     true # Omit output
   }
 
+  git_disk_usage() {
+    # Hardcode output of `du` to ensure non-flaky tests
+    echo 5308-dummy
+  }
+
   setup() {
       pull_directory="pull_directory"
       pull_repository="pull_repository"
@@ -165,6 +175,7 @@ git remote add origin https://github.com/pull_repository.git
 git -c remote.origin.promisor=true fetch --filter=blob:none --depth=1 origin pull_revision
 git sparse-checkout set --no-cone !* pull_directory/**/ar/** pull_directory/**/ar.* pull_directory/**/es_419/** pull_directory/**/es_419.* pull_directory/**/fr_CA/** pull_directory/**/fr_CA.*
 git checkout FETCH_HEAD
+Size of pulled data on-disk (bytes): 5308-dummy
 cd ..'
   End
 End
