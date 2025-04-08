@@ -475,8 +475,7 @@ git_sparse_checkout_set() {
 
 git_disk_usage() {
   # Print the disk usage of the whole git "atlas pull" directory
-  # Minor note: the size are essentially rounded up to the next 512-byte value. See: https://superuser.com/a/402000
-  du -s . | grep -o '[0-9]*'
+  du -s -k . | grep -o '[0-9]*'
 }
 
 expand_glob_pattern() {

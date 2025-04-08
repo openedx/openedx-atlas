@@ -79,7 +79,7 @@ Describe 'Pull performance on edX Platform Arabic translations'
 
     git_disk_usage() {
       # Intercept to capture disk usage for testing purposes
-      DISK_USAGE=$(du -s . | grep -o '[0-9]*');
+      DISK_USAGE=$(du -k -s . | grep -o '[0-9]*');
 
       %preserve DISK_USAGE
       echo "$DISK_USAGE"
