@@ -512,11 +512,17 @@ pull_translations() {
     quiet="--quiet"
   fi
 
+  if [[ "$pull_repository" =~ ^(https?|git@|ssh://).* ]]; then
+    repo_url="$pull_repository"
+  else
+    # Fallback to the original GitHub format
+    repo_url="https://github.com/${pull_repository}.git"
+  fi
 
   # Creating a shallow clone of the repo without without pulling the files yet
   git init $quiet translations_TEMP || exit
   cd translations_TEMP || exit
-  git remote add origin "https://github.com/${pull_repository}.git" || exit
+  git remote add origin "$repo_url" || exit
   # Requires server to allow pulling commits by direct commit hash reference,
   # controlled by uploadpack.allowAnySHA1InWant and related configs. (GitHub
   # does allow this, though.)
