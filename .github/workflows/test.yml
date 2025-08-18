@@ -10,7 +10,7 @@ jobs:
   shellspec-linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: install shellcheck
       run: |
         sudo apt-get update
@@ -31,7 +31,7 @@ jobs:
   shellspec-mac:
     runs-on: macos-13
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: install shellcheck
       run: brew install shellcheck
     - name: install shellspec
