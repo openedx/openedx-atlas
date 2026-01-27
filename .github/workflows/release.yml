@@ -17,13 +17,14 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-
+    - name: Setup Node
+      uses: actions/setup-node@v6
+      with:
+        node-version-file: '.nvmrc'
     - name: Determine next tag version
       env:
         GITHUB_TOKEN: ${{ secrets.OPENEDX_SEMANTIC_RELEASE_GITHUB_TOKEN }}
       run: |
-        nvm use
-
         # Run in dry-run mode to determine the next tag version and store it in semantic-release-dry-run.txt
         npx semantic-release@25 --dry-run | tee semantic-release-dry-run.txt
 
@@ -56,8 +57,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.OPENEDX_SEMANTIC_RELEASE_GITHUB_TOKEN }}
       run: |
-        nvm use
-
         # Hardcode the next tag version in the atlas script
         sed -i -e "s/_ATLAS_VERSION=.*/_ATLAS_VERSION=\"$NEXT_VERSION\"  # Tagged by release.yml/" atlas
 
