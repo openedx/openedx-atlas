@@ -26,7 +26,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.OPENEDX_SEMANTIC_RELEASE_GITHUB_TOKEN }}
       run: |
         # Run in dry-run mode to determine the next tag version and store it in semantic-release-dry-run.txt
-        npx semantic-release@25 --dry-run | tee semantic-release-dry-run.txt
+        FORCE_COLOR=0 npx semantic-release@25 --dry-run | tee semantic-release-dry-run.txt
 
         if grep -q 'no new version is released' semantic-release-dry-run.txt; then
           RELEASE_NEEDED=no
