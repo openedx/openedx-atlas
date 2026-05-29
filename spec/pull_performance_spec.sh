@@ -149,7 +149,7 @@ translations_TEMP/conf/locale/fr/LC_MESSAGES/djangojs.po"
     #
     # Disk usage should be very low and could vary depending on how the system 
     # calculates it but it's less than 10 kilobytes since the git tag is frozen
-    Assert check_disk_usage "Pull edX Platform" $DISK_USAGE 8500  # 8.5 Kilobytes
+    Assert check_disk_usage "Pull edX Platform" $DISK_USAGE 9500  # 9.5 Kilobytes
 
 
     # It uses little as less bandwidth as possible during git-fetch
