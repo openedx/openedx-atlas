@@ -29,3 +29,11 @@ test: ## automated testing using shellspec: run all tests
 
 atlas_help_to_readme: gengetoptions ## Updates the `atlas --help` section of the README.rst file
 	python3 scripts/atlas_help_to_readme.py
+
+requirements: ## install development dependencies
+	uv sync --group dev
+	uv tool install tox --with tox-uv
+
+upgrade: ## upgrade dependencies
+	uv run --with edx-lint edx_lint write_uv_constraints pyproject.toml
+	uv lock --upgrade

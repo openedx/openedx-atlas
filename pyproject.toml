@@ -1,0 +1,91 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openedx-atlas"
+dynamic = ["version"]
+description = "An Open edX CLI tool for moving translation files from openedx-translations."
+readme = "README.rst"
+requires-python = ">=3.12"
+license = "AGPL-3.0-or-later"
+authors = [
+    {name = "Open edX project", email = "oscm@axim.org"},
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.2",
+]
+keywords = ["Open edX", "translations", "atlas", "i18n"]
+
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/openedx/openedx-atlas"
+
+[tool.setuptools]
+script-files = ["atlas"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests*", "*.tests", "*.tests.*", "docs*"]
+
+[tool.setuptools_scm]
+version_scheme = "only-version"
+local_scheme = "no-local-version"
+
+[tool.uv]
+package = true
+constraint-dependencies = []
+
+[tool.edx_lint]
+uv_constraints = []
+
+[dependency-groups]
+test-base = []
+test = [
+    {include-group = "test-base"},
+]
+quality = []
+doc = [
+    "sphinx",
+    "sphinx-rtd-theme",
+]
+ci = [
+    {include-group = "test"},
+    {include-group = "quality"},
+]
+dev = [
+    {include-group = "ci"},
+    {include-group = "doc"},
+]
+
+[tool.coverage.run]
+branch = true
+source_pkgs = ["openedx_atlas"]
+omit = [
+    "*/tests/*",
+    "*/test/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.semantic_release]
+allow_zero_version = true
+major_on_zero = false
+build_command = "SETUPTOOLS_SCM_PRETEND_VERSION=$NEW_VERSION python -m build"
