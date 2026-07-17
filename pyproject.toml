@@ -57,10 +57,12 @@ doc = [
     "sphinx-rtd-theme",
 ]
 ci = [
-    {include-group = "test"},
-    {include-group = "quality"},
+    "tox",
+    "tox-uv",
 ]
 dev = [
+    {include-group = "test"},
+    {include-group = "quality"},
     {include-group = "ci"},
     {include-group = "doc"},
 ]
