@@ -21,10 +21,12 @@ jobs:
     - name: install shellspec
       run: |
         brew tap shellspec/shellspec
+        brew trust shellspec/shellspec
         brew install shellspec
     - name: install getoptions
       run: |
         brew tap ko1nksm/getoptions
+        brew trust ko1nksm/getoptions
         brew install getoptions
     - name: run shellspec
       run: shellspec
@@ -37,10 +39,12 @@ jobs:
     - name: install shellspec
       run: |
         brew tap shellspec/shellspec
+        brew trust shellspec/shellspec
         brew install shellspec
     - name: install getoptions
       run: |
         brew tap ko1nksm/getoptions
+        brew trust ko1nksm/getoptions
         brew install getoptions
     - name: run shellspec
       run: shellspec
