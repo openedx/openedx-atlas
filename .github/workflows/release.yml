@@ -65,31 +65,27 @@ jobs:
         # Actually create the tag and upload the atlas script
         npx semantic-release@25
 
-    # Release to PyPi
-    - name: Install dependencies
-      run: pip install pip
+    # Release to PyPI
+    - name: Install uv
+      uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
 
-    - name: Install Dependencies
-      run: pip install setuptools wheel
-
-    - name: Update the tag version in setup.py
+    - name: Update the tag version in pyproject.toml
       if: env.NEXT_VERSION
       run: |
         NEXT_VERSION_PYPI=${NEXT_VERSION:1}  # Remove the leading 'v' to match PyPi's versioning scheme
-        sed -i -e "s/version=.*,/version='$NEXT_VERSION_PYPI',  # tagged by release.yml/" setup.py
-        cat setup.py  # Debug setup.py output
+        sed -i -e "s/^version = .*/version = \"$NEXT_VERSION_PYPI\"  # tagged by release.yml/" pyproject.toml
+        cat pyproject.toml  # Debug pyproject.toml output
 
     - name: Build package
-      run: python setup.py sdist bdist_wheel
+      if: env.NEXT_VERSION
+      run: uv build
 
     - name: Print built package version
+      if: env.NEXT_VERSION
       run: |
         echo "DEBUG: checking the version within the pip wheel .whl file"
         less dist/*.whl | head -n 20
 
-    - name: Publish to PyPi
+    - name: Publish to PyPI
       if: env.NEXT_VERSION
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_UPLOAD_TOKEN }}
+      uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
