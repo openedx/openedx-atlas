@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openedx-atlas"
+version = "0.0.dev1"
+description = "An Open edX CLI tool for moving translation files from openedx-translations."
+license = "AGPL-3.0-or-later"
+authors = [
+    {name = "Open edX project", email = "oscm@axim.org"},
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+]
+
+dynamic = ["readme"]
+
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/openedx/openedx-atlas"
+
+[tool.setuptools]
+include-package-data = true
+script-files = ["atlas"]
+packages = ["openedx_atlas"]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst"], content-type = "text/x-rst"}
+
+[tool.coverage.run]
+branch = true
+data_file = ".coverage"
+source = ["openedx_atlas"]
