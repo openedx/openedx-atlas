@@ -30,7 +30,3 @@ packages = ["openedx_atlas"]
 [tool.setuptools.dynamic]
 readme = {file = ["README.rst"], content-type = "text/x-rst"}
 
-[tool.coverage.run]
-branch = true
-data_file = ".coverage"
-source = ["openedx_atlas"]
