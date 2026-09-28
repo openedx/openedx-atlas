@@ -174,7 +174,7 @@ Running Automated Tests Locally
 Usage Examples
 --------------
 
-There's a couple of patterns that are useful to imitate when using Atlas
+There is a couple of patterns that are useful to imitate when using Atlas
 depending on the use case. ``atlas pull`` is most commonly implemented in
 ``Makefile``, however it can be also used in ``Dockerfile`` builds or any
 other automation tool.
