@@ -460,7 +460,7 @@ check_git_version() {
     return 1
   fi
 
-  if [ "$(printf '%s\n' "$MINIMUM_GIT_VERSION" "$GIT_VERSION" | sort --version-sort | head -n1)" != "$MINIMUM_GIT_VERSION" ];
+  if [ "$(printf '%s\n' "$MINIMUM_GIT_VERSION" "$GIT_VERSION" | sort -V | head -n1)" != "$MINIMUM_GIT_VERSION" ];
   then
     echo "Git version ${GIT_VERSION} is not supported. Please upgrade to ${MINIMUM_GIT_VERSION} or higher."
     return 1
