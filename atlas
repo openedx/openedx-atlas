@@ -428,7 +428,7 @@ set_pull_params() {
 
 contains_substring() {
   # Checks if $1 string contains $2.
-  printf '%s' "$1" | grep --fixed-strings --silent -e "$2"
+  printf '%s' "$1" | grep -Fq -e "$2"
   return $?
 }
 
