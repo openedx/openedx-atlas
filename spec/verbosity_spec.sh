@@ -7,7 +7,7 @@ Describe 'Test default verbosity'
     }
 
     git_sparse_checkout_set() {
-      true  # skip the sparse-checkout rules
+      cat > /dev/null  # skip the sparse-checkout rules, but read them so the writer doesn't get a broken pipe
     }
 
     git() {
@@ -81,7 +81,7 @@ Describe 'Test silent flag'
     }
 
     git_sparse_checkout_set() {
-      true  # skip the sparse-checkout rules
+      cat > /dev/null  # skip the sparse-checkout rules, but read them so the writer doesn't get a broken pipe
     }
 
     git() {
@@ -161,7 +161,7 @@ Describe 'Test verbose flag'
     }
 
     git_sparse_checkout_set() {
-      true  # skip the sparse-checkout rules
+      cat > /dev/null  # skip the sparse-checkout rules, but read them so the writer doesn't get a broken pipe
     }
 
     git() {
